@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kadima Salud - Contacto. Envianos tu consulta y un integrante de nuestro equipo se comunicará a la brevedad.">
+  <meta property="og:title" content="Contacto | Kadima Salud">
+  <title>Contacto | Kadima Salud</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo">
+        <i class="fas fa-shield-heart"></i>
+        <span>Kadima <strong>Salud</strong></span>
+      </a>
+      <button class="navbar__toggle" id="menuToggle" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="navbar__links" id="navLinks">
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li><a href="capacitaciones.html">Capacitaciones</a></li>
+        <li><a href="surge.html">SURGE</a></li>
+        <li><a href="equipos.html">Equipos</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+        <li class="navbar__cta-mobile-item"><a href="contacto.html" class="btn btn--primary">Consultar</a></li>
+      </ul>
+      <a href="contacto.html" class="btn btn--primary navbar__cta">Consultar</a>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE HERO ===== -->
+  <section class="page-hero">
+    <div class="container page-hero__inner">
+      <p class="section-header__tag section-header__tag--light">Estamos para ayudarte</p>
+      <h1>Contacto</h1>
+      <p>Completá el formulario o comunicate por WhatsApp y te respondemos a la brevedad</p>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section class="contacto">
+    <div class="container contacto__inner">
+      <div class="contacto__info fade-in">
+        <p class="section-header__tag">Hablemos</p>
+        <h2>¿Cómo podemos ayudarte?</h2>
+        <p>Completá el formulario con tu consulta y un integrante de nuestro equipo se comunicará a la brevedad.</p>
+        <div class="contacto__channels">
+          <a href="mailto:contacto@kadimasalud.com.ar" class="contacto__channel">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <strong>Email</strong>
+              <span>contacto@kadimasalud.com.ar</span>
+            </div>
+          </a>
+          <a href="https://wa.me/5491100000000" target="_blank" rel="noopener noreferrer" class="contacto__channel">
+            <i class="fab fa-whatsapp"></i>
+            <div>
+              <strong>WhatsApp</strong>
+              <span>Respuesta rápida</span>
+            </div>
+          </a>
+          <a href="https://instagram.com/KadimaSalud" target="_blank" rel="noopener noreferrer" class="contacto__channel">
+            <i class="fab fa-instagram"></i>
+            <div>
+              <strong>Instagram</strong>
+              <span>@KadimaSalud</span>
+            </div>
+          </a>
+          <a href="https://facebook.com/KadimaSalud" target="_blank" rel="noopener noreferrer" class="contacto__channel">
+            <i class="fab fa-facebook"></i>
+            <div>
+              <strong>Facebook</strong>
+              <span>Kadima Salud</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="contacto__form-wrap fade-in">
+        <form class="contacto__form" id="contactForm" novalidate>
+          <div class="form__row form__row--two">
+            <div class="form__group">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            </div>
+            <div class="form__group">
+              <label for="apellido">Apellido</label>
+              <input type="text" id="apellido" name="apellido" placeholder="Tu apellido" required>
+            </div>
+          </div>
+          <div class="form__row form__row--two">
+            <div class="form__group">
+              <label for="celular">Celular</label>
+              <input type="tel" id="celular" name="celular" placeholder="+54 9 11 ..." required>
+            </div>
+            <div class="form__group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+            </div>
+          </div>
+          <div class="form__group">
+            <label for="consulta">Consulta</label>
+            <textarea id="consulta" name="consulta" rows="5" placeholder="Contanos en qué podemos ayudarte..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary btn--full">
+            <i class="fas fa-paper-plane"></i>
+            Enviar consulta
+          </button>
+          <div class="form__success" id="formSuccess" hidden>
+            <i class="fas fa-circle-check"></i>
+            <p>¡Gracias! Tu consulta fue enviada correctamente. Te contactaremos a la brevedad.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <a href="index.html" class="navbar__logo">
+          <i class="fas fa-shield-heart"></i>
+          <span>Kadima <strong>Salud</strong></span>
+        </a>
+        <p>Consultora especializada en administración de salud. Soluciones estratégicas para el sector.</p>
+        <div class="footer__social">
+          <a href="https://instagram.com/KadimaSalud" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://facebook.com/KadimaSalud" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="https://wa.me/5491100000000" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:contacto@kadimasalud.com.ar" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer__links">
+        <div class="footer__col">
+          <h4>Servicios</h4>
+          <ul>
+            <li><a href="capacitaciones.html">Capacitaciones</a></li>
+            <li><a href="surge.html">Presentaciones SURGE</a></li>
+            <li><a href="equipos.html">Equipos Médicos</a></li>
+            <li><a href="nosotros.html">Consultoría</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:contacto@kadimasalud.com.ar">contacto@kadimasalud.com.ar</a></li>
+            <li><a href="https://instagram.com/KadimaSalud" target="_blank" rel="noopener noreferrer">@KadimaSalud</a></li>
+            <li><a href="contacto.html">Formulario de contacto</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>&copy; 2025 Kadima Salud. Todos los derechos reservados.</p>
+        <p><a href="https://kadimasalud.com.ar" rel="noopener noreferrer">kadimasalud.com.ar</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/5491100000000" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <script src="main.js"></script>
+</body>
+</html>
