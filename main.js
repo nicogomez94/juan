@@ -51,22 +51,26 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-// --- Formulario de contacto ---
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  const formSuccess = document.getElementById('formSuccess');
-  contactForm.addEventListener('submit', (e) => {
+// --- Formulario de contacto (reutilizable) ---
+function initContactForm(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const btn = contactForm.querySelector('button[type="submit"]');
+    const btn = form.querySelector('button[type="submit"]');
+    const successEl = form.querySelector('.form__success');
     btn.disabled  = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     // Simulación — reemplazar por fetch() o integración real
     setTimeout(() => {
-      contactForm.reset();
-      formSuccess.hidden = false;
+      form.reset();
+      if (successEl) { successEl.style.display = 'flex'; }
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar consulta';
       btn.disabled  = false;
-      formSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (successEl) { successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
     }, 1400);
   });
 }
+
+initContactForm('contactForm');
+initContactForm('contactFormHome');
