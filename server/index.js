@@ -1,4 +1,5 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 
@@ -7,8 +8,10 @@ const PORT = process.env.PORT || 3001
 
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173', process.env.FRONTEND_URL].filter(Boolean) }))
 app.use(express.json())
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
 
 // Routes
+app.use('/api/upload', require('./routes/upload'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/capacitaciones', require('./routes/capacitaciones'))
 app.use('/api/equipos', require('./routes/equipos'))

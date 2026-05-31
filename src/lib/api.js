@@ -32,3 +32,17 @@ export const api = {
   put: (path, body) => request(path, { method: 'PUT', body: JSON.stringify(body) }),
   delete: (path) => request(path, { method: 'DELETE' }),
 }
+
+export async function uploadImages(files) {
+  const token = getToken()
+  const formData = new FormData()
+  files.forEach(f => formData.append('images', f))
+  const res = await fetch(`${BASE}/api/upload`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
+  return data.urls // string[]
+}

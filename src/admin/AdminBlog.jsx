@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { api } from '../lib/api'
+import { api, uploadImages } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
+import ImageUploader from './ImageUploader'
 
 const EMPTY_POST = { titulo: '', resumen: '', imagen: '', categoria: 'General', contenido: '', publicado: false }
 
@@ -18,6 +19,8 @@ export default function AdminBlog() {
   const [saving, setSaving] = useState(false)
   const [alert, setAlert] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [pendingModal, setPendingModal] = useState([])     // File[] para el modal
+  const [pendingEditor, setPendingEditor] = useState([])   // File[] para el editor de edición
   const editorRef = useRef(null)
   const modalEditorRef = useRef(null)
 
@@ -31,17 +34,20 @@ export default function AdminBlog() {
     const d = DEBUG ? debugDefaults.blogPost : {}
     setForm({ ...EMPTY_POST, ...d })
     setEditing(null)
+    setPendingModal([])
     setModalOpen(true)
   }
 
   function closeModal() {
     setModalOpen(false)
+    setPendingModal([])
     setAlert(null)
   }
 
   function openEdit(post) {
     setForm({ titulo: post.titulo, resumen: post.resumen || '', imagen: post.imagen || '', categoria: post.categoria, contenido: post.contenido, publicado: post.publicado })
     setEditing(post)
+    setPendingEditor([])
     setView('editor')
     setTimeout(() => { if (editorRef.current) editorRef.current.innerHTML = post.contenido }, 50)
   }
@@ -62,9 +68,15 @@ export default function AdminBlog() {
     e.preventDefault()
     const activeRef = modalOpen ? modalEditorRef : editorRef
     const contenido = activeRef.current?.innerHTML || form.contenido
-    const body = { ...form, contenido }
+    const pendingFiles = modalOpen ? pendingModal : pendingEditor
     setSaving(true)
     try {
+      let imagen = form.imagen
+      if (pendingFiles.length > 0) {
+        const urls = await uploadImages(pendingFiles)
+        imagen = urls[0] || imagen
+      }
+      const body = { ...form, imagen, contenido }
       if (!editing) await api.post('/api/blog', body)
       else await api.put(`/api/blog/${editing.id}`, body)
       setAlert({ type: 'success', msg: !editing ? 'Post creado.' : 'Post actualizado.' })
@@ -164,9 +176,12 @@ export default function AdminBlog() {
                 <input name="categoria" value={form.categoria} onChange={handle} placeholder="General" />
               </div>
               <div className="admin-form__group">
-                <label>URL de imagen</label>
-                <input name="imagen" value={form.imagen} onChange={handle} placeholder="https://..." />
-                {form.imagen && <img src={form.imagen} alt="" style={{ marginTop: '0.5rem', width: '100%', borderRadius: 6, objectFit: 'cover', height: 120 }} />}
+                <label>Imagen de portada</label>
+                <ImageUploader
+                  existingUrl={form.imagen}
+                  onExistingRemove={() => setForm(f => ({ ...f, imagen: '' }))}
+                  onFilesChange={files => setPendingEditor(files)}
+                />
               </div>
             </div>
           </div>
@@ -302,9 +317,12 @@ export default function AdminBlog() {
                     <input name="categoria" value={form.categoria} onChange={handle} placeholder="General" />
                   </div>
                   <div className="admin-form__group" style={{ marginBottom: 0 }}>
-                    <label>URL de imagen</label>
-                    <input name="imagen" value={form.imagen} onChange={handle} placeholder="https://..." />
-                    {form.imagen && <img src={form.imagen} alt="" style={{ marginTop: '0.5rem', width: '100%', borderRadius: 6, objectFit: 'cover', height: 100 }} />}
+                    <label>Imagen de portada</label>
+                    <ImageUploader
+                      existingUrl={form.imagen}
+                      onExistingRemove={() => setForm(f => ({ ...f, imagen: '' }))}
+                      onFilesChange={files => setPendingModal(files)}
+                    />
                   </div>
                 </div>
               </div>
