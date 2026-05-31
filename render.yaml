@@ -1,24 +1,21 @@
 services:
   - type: web
     name: kadima-salud
-    runtime: static
-    staticPublishPath: .
-    pullRequestPreviewsEnabled: false
-
-    buildCommand: ""
-
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: "public, max-age=3600"
-      - path: "/*.css"
-        name: Cache-Control
-        value: "public, max-age=86400"
-      - path: "/*.js"
-        name: Cache-Control
-        value: "public, max-age=86400"
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm --prefix server ci --include=dev && npm --prefix server run db:guard && npm --prefix server exec -- prisma generate && npm --prefix server exec -- prisma migrate deploy && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Set this in Render to the shared Postgres URL with ?schema=kadima_salud.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
