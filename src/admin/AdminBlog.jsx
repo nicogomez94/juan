@@ -19,6 +19,7 @@ export default function AdminBlog() {
   const [saving, setSaving] = useState(false)
   const [alert, setAlert] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [confirmClose, setConfirmClose] = useState(false)
   const [pendingModal, setPendingModal] = useState([])     // File[] para el modal
   const [pendingEditor, setPendingEditor] = useState([])   // File[] para el editor de edición
   const editorRef = useRef(null)
@@ -35,13 +36,19 @@ export default function AdminBlog() {
     setForm({ ...EMPTY_POST, ...d })
     setEditing(null)
     setPendingModal([])
+    setConfirmClose(false)
     setModalOpen(true)
   }
 
   function closeModal() {
     setModalOpen(false)
+    setConfirmClose(false)
     setPendingModal([])
     setAlert(null)
+  }
+
+  function requestClose() {
+    setConfirmClose(true)
   }
 
   function openEdit(post) {
@@ -252,11 +259,26 @@ export default function AdminBlog() {
 
     {/* Modal: Nuevo post */}
     {modalOpen && (
-      <div className="admin-modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
-        <div className="admin-modal" style={{ maxWidth: '820px' }}>
+      <div className="admin-modal-overlay">
+        <div className="admin-modal" style={{ maxWidth: '820px', position: 'relative' }}>
+
+          {/* Confirmación de cierre */}
+          {confirmClose && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', borderRadius: 'inherit', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ background: '#fff', borderRadius: 'var(--radius-md)', padding: '2rem 2.25rem', maxWidth: 400, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>⚠️</div>
+                <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--color-primary)', marginBottom: '0.5rem' }}>¿Cerrar sin guardar?</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--color-gray)', marginBottom: '1.5rem' }}>Vas a perder toda la data cargada.</p>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                  <button type="button" className="btn btn--secondary" onClick={() => setConfirmClose(false)}>No, seguir editando</button>
+                  <button type="button" className="btn btn--primary" style={{ background: '#dc3545', borderColor: '#dc3545' }} onClick={closeModal}>Sí, cerrar</button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="admin-modal__header">
             <h3><i className="fas fa-plus" style={{ marginRight: '0.5rem' }} />Nuevo post</h3>
-            <button className="admin-modal__close" onClick={closeModal}><i className="fas fa-xmark" /></button>
+            <button className="admin-modal__close" onClick={requestClose}><i className="fas fa-xmark" /></button>
           </div>
 
           <form id="blog-modal-form" onSubmit={save}>
@@ -335,7 +357,7 @@ export default function AdminBlog() {
             )}
 
             <div className="admin-modal__footer">
-              <button type="button" className="btn btn--secondary" onClick={closeModal} disabled={saving}>Cancelar</button>
+              <button type="button" className="btn btn--secondary" onClick={requestClose} disabled={saving}>Cancelar</button>
               <button type="submit" className="btn btn--primary" disabled={saving}>
                 {saving ? 'Guardando...' : <><i className="fas fa-floppy-disk" /> Crear post</>}
               </button>
