@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
 
-function useFadeIn() {
+function useFadeIn(deps = []) {
   const ref = useRef(null)
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -15,14 +15,15 @@ function useFadeIn() {
     const el = ref.current; if (!el) return
     el.querySelectorAll('.fade-in').forEach(t => observer.observe(t))
     return () => el.querySelectorAll('.fade-in').forEach(t => observer.unobserve(t))
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
   return ref
 }
 
 export default function Equipos() {
-  const ref = useFadeIn()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const ref = useFadeIn([items])
 
   useEffect(() => {
     api.get('/api/equipos')

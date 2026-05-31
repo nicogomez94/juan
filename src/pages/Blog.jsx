@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
 
-function useFadeIn() {
+function useFadeIn(deps = []) {
   const ref = useRef(null)
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -15,7 +15,8 @@ function useFadeIn() {
     const el = ref.current; if (!el) return
     el.querySelectorAll('.fade-in').forEach(t => observer.observe(t))
     return () => el.querySelectorAll('.fade-in').forEach(t => observer.unobserve(t))
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
   return ref
 }
 
@@ -25,11 +26,11 @@ function formatDate(d) {
 }
 
 export default function Blog() {
-  const ref = useFadeIn()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [categoria, setCategoria] = useState('')
   const [categorias, setCategorias] = useState([])
+  const ref = useFadeIn([posts])
 
   useEffect(() => {
     const url = categoria ? `/api/blog?categoria=${encodeURIComponent(categoria)}` : '/api/blog'

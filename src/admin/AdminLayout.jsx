@@ -4,7 +4,7 @@ import { clearToken } from '../lib/api'
 import './admin.css'
 
 const navItems = [
-  { to: '/admin/dashboard', icon: 'fa-grid-2', label: 'Dashboard' },
+  { to: '/admin/dashboard', icon: 'fa-table-columns', label: 'Dashboard' },
   { to: '/admin/capacitaciones', icon: 'fa-graduation-cap', label: 'Capacitaciones' },
   { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
   { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
