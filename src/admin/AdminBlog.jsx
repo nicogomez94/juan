@@ -17,7 +17,9 @@ export default function AdminBlog() {
   const [form, setForm] = useState(EMPTY_POST)
   const [saving, setSaving] = useState(false)
   const [alert, setAlert] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
   const editorRef = useRef(null)
+  const modalEditorRef = useRef(null)
 
   function load() {
     setLoading(true)
@@ -29,7 +31,12 @@ export default function AdminBlog() {
     const d = DEBUG ? debugDefaults.blogPost : {}
     setForm({ ...EMPTY_POST, ...d })
     setEditing(null)
-    setView('editor')
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setAlert(null)
   }
 
   function openEdit(post) {
@@ -53,7 +60,8 @@ export default function AdminBlog() {
 
   async function save(e) {
     e.preventDefault()
-    const contenido = editorRef.current?.innerHTML || form.contenido
+    const activeRef = modalOpen ? modalEditorRef : editorRef
+    const contenido = activeRef.current?.innerHTML || form.contenido
     const body = { ...form, contenido }
     setSaving(true)
     try {
@@ -61,7 +69,8 @@ export default function AdminBlog() {
       else await api.put(`/api/blog/${editing.id}`, body)
       setAlert({ type: 'success', msg: !editing ? 'Post creado.' : 'Post actualizado.' })
       load()
-      backToList()
+      if (modalOpen) closeModal()
+      else backToList()
     } catch (err) {
       setAlert({ type: 'error', msg: err.message || 'Error al guardar' })
     } finally { setSaving(false) }
@@ -167,6 +176,7 @@ export default function AdminBlog() {
   }
 
   return (
+    <>
     <div>
       <div className="admin-section-header">
         <h2>Blog</h2>
@@ -224,5 +234,98 @@ export default function AdminBlog() {
         </table>
       </div>
     </div>
+
+    {/* Modal: Nuevo post */}
+    {modalOpen && (
+      <div className="admin-modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
+        <div className="admin-modal" style={{ maxWidth: '820px' }}>
+          <div className="admin-modal__header">
+            <h3><i className="fas fa-plus" style={{ marginRight: '0.5rem' }} />Nuevo post</h3>
+            <button className="admin-modal__close" onClick={closeModal}><i className="fas fa-xmark" /></button>
+          </div>
+
+          <form id="blog-modal-form" onSubmit={save}>
+            <div className="admin-modal__body" style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: '1.25rem', alignItems: 'start' }}>
+              {/* Main */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="admin-form__group">
+                  <label>Título *</label>
+                  <input name="titulo" value={form.titulo} onChange={handle} required style={{ fontSize: '1.0625rem' }} />
+                </div>
+                <div className="admin-form__group">
+                  <label>Resumen</label>
+                  <textarea name="resumen" value={form.resumen} onChange={handle} rows={2} placeholder="Breve descripción del artículo..." />
+                </div>
+                <div className="admin-form__group">
+                  <label>Contenido</label>
+                  <div className="admin-editor">
+                    <div className="admin-editor__toolbar">
+                      <button type="button" className="admin-editor__btn" title="Negrita" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('bold', false, null) }}><i className="fas fa-bold" /></button>
+                      <button type="button" className="admin-editor__btn" title="Cursiva" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('italic', false, null) }}><i className="fas fa-italic" /></button>
+                      <button type="button" className="admin-editor__btn" title="Subrayado" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('underline', false, null) }}><i className="fas fa-underline" /></button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Título H2" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('formatBlock', false, 'H2') }}><b>H2</b></button>
+                      <button type="button" className="admin-editor__btn" title="Párrafo" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('formatBlock', false, 'P') }}>¶</button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Lista con viñetas" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('insertUnorderedList', false, null) }}><i className="fas fa-list-ul" /></button>
+                      <button type="button" className="admin-editor__btn" title="Lista numerada" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('insertOrderedList', false, null) }}><i className="fas fa-list-ol" /></button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Alinear izquierda" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('justifyLeft', false, null) }}><i className="fas fa-align-left" /></button>
+                      <button type="button" className="admin-editor__btn" title="Centrar" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('justifyCenter', false, null) }}><i className="fas fa-align-center" /></button>
+                      <button type="button" className="admin-editor__btn" title="Quitar formato" onClick={() => { modalEditorRef.current?.focus(); document.execCommand('removeFormat', false, null) }}><i className="fas fa-eraser" /></button>
+                    </div>
+                    <div
+                      ref={modalEditorRef}
+                      className="admin-editor__content"
+                      contentEditable
+                      suppressContentEditableWarning
+                      dangerouslySetInnerHTML={{ __html: form.contenido }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ background: 'var(--color-gray-light)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                  <p style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--color-primary)', marginBottom: '0.75rem' }}>Publicación</p>
+                  <label className="admin-toggle">
+                    <input type="checkbox" name="publicado" checked={form.publicado} onChange={handle} />
+                    <span className="admin-toggle__track" />
+                    {form.publicado ? 'Publicado' : 'Borrador'}
+                  </label>
+                </div>
+                <div style={{ background: 'var(--color-gray-light)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                  <p style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--color-primary)', marginBottom: '0.75rem' }}>Detalles</p>
+                  <div className="admin-form__group">
+                    <label>Categoría</label>
+                    <input name="categoria" value={form.categoria} onChange={handle} placeholder="General" />
+                  </div>
+                  <div className="admin-form__group" style={{ marginBottom: 0 }}>
+                    <label>URL de imagen</label>
+                    <input name="imagen" value={form.imagen} onChange={handle} placeholder="https://..." />
+                    {form.imagen && <img src={form.imagen} alt="" style={{ marginTop: '0.5rem', width: '100%', borderRadius: 6, objectFit: 'cover', height: 100 }} />}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {alert && (
+              <div className={`admin-alert admin-alert--${alert.type}`} style={{ margin: '0 1.75rem' }}>
+                <i className={`fas fa-${alert.type === 'success' ? 'circle-check' : 'circle-exclamation'}`} /> {alert.msg}
+              </div>
+            )}
+
+            <div className="admin-modal__footer">
+              <button type="button" className="btn btn--secondary" onClick={closeModal} disabled={saving}>Cancelar</button>
+              <button type="submit" className="btn btn--primary" disabled={saving}>
+                {saving ? 'Guardando...' : <><i className="fas fa-floppy-disk" /> Crear post</>}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
