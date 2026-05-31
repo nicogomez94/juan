@@ -3,7 +3,7 @@ services:
     name: kadima-salud
     runtime: node
     plan: free
-    buildCommand: npm ci --include=dev && npm --prefix server ci --include=dev && npm --prefix server run db:guard && npm --prefix server exec -- prisma generate && npm --prefix server exec -- prisma migrate deploy && npm run build
+    buildCommand: npm ci --include=dev && npm --prefix server ci --include=dev && npm --prefix server run db:guard && ./server/node_modules/.bin/prisma generate --schema=server/prisma/schema.prisma && ./server/node_modules/.bin/prisma migrate deploy --schema=server/prisma/schema.prisma && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     autoDeployTrigger: commit
