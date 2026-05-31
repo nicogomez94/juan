@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
+import { useToast } from './ToastContext'
 
 const EMPTY = { nombre: '', descripcion: '', icono: 'fa-stethoscope', orden: 0, activo: true }
 
 export default function AdminEquipos() {
+  const toast = useToast()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
@@ -30,24 +32,46 @@ export default function AdminEquipos() {
     e.preventDefault()
     setSaving(true)
     const body = { ...form, orden: Number(form.orden) }
+    const isCreate = modal === 'create'
     try {
-      if (modal === 'create') await api.post('/api/equipos', body)
+      if (isCreate) await api.post('/api/equipos', body)
       else await api.put(`/api/equipos/${modal.id}`, body)
-      setAlert({ type: 'success', msg: modal === 'create' ? 'Equipo creado.' : 'Equipo actualizado.' })
+      setAlert(null)
+      toast.success(isCreate ? 'Equipo creado.' : 'Equipo actualizado.')
       closeModal(); load()
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'Error al guardar' })
+      const msg = err.message || 'Error al guardar'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally { setSaving(false) }
   }
 
   async function remove(id) {
     if (!confirm('¿Eliminar este equipo?')) return
-    try { await api.delete(`/api/equipos/${id}`); load() } catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.delete(`/api/equipos/${id}`)
+      setAlert(null)
+      toast.success('Equipo eliminado.')
+      load()
+    } catch (err) {
+      const msg = err.message || 'No se pudo eliminar el equipo'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   async function toggleActivo(item) {
-    try { await api.put(`/api/equipos/${item.id}`, { ...item, activo: !item.activo }); load() }
-    catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.put(`/api/equipos/${item.id}`, { ...item, activo: !item.activo })
+      setAlert(null)
+      toast.success(!item.activo ? 'Equipo activado.' : 'Equipo desactivado.')
+      load()
+    }
+    catch (err) {
+      const msg = err.message || 'No se pudo actualizar el equipo'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   return (

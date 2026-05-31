@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
+import { useToast } from './ToastContext'
 
 const EMPTY = { titulo: '', duracion: '', badge: '', badgeColor: 'navy', descripcion: '', temas: '', icono: 'fa-book', publico: '', modalidad: 'Virtual', activo: true }
 
 export default function AdminCapacitaciones() {
+  const toast = useToast()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null) // null | 'create' | {item}
@@ -33,24 +35,46 @@ export default function AdminCapacitaciones() {
     e.preventDefault()
     setSaving(true)
     const body = { ...form, temas: form.temas.split('\n').map(t => t.trim()).filter(Boolean) }
+    const isCreate = modal === 'create'
     try {
-      if (modal === 'create') await api.post('/api/capacitaciones', body)
+      if (isCreate) await api.post('/api/capacitaciones', body)
       else await api.put(`/api/capacitaciones/${modal.id}`, body)
-      setAlert({ type: 'success', msg: modal === 'create' ? 'Capacitación creada.' : 'Capacitación actualizada.' })
+      setAlert(null)
+      toast.success(isCreate ? 'Capacitación creada.' : 'Capacitación actualizada.')
       closeModal(); load()
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'Error al guardar' })
+      const msg = err.message || 'Error al guardar'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally { setSaving(false) }
   }
 
   async function remove(id) {
     if (!confirm('¿Eliminar esta capacitación?')) return
-    try { await api.delete(`/api/capacitaciones/${id}`); load() } catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.delete(`/api/capacitaciones/${id}`)
+      setAlert(null)
+      toast.success('Capacitación eliminada.')
+      load()
+    } catch (err) {
+      const msg = err.message || 'No se pudo eliminar la capacitación'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   async function toggleActivo(item) {
-    try { await api.put(`/api/capacitaciones/${item.id}`, { ...item, temas: item.temas || [], activo: !item.activo }); load() }
-    catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.put(`/api/capacitaciones/${item.id}`, { ...item, temas: item.temas || [], activo: !item.activo })
+      setAlert(null)
+      toast.success(!item.activo ? 'Capacitación activada.' : 'Capacitación desactivada.')
+      load()
+    }
+    catch (err) {
+      const msg = err.message || 'No se pudo actualizar la capacitación'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   return (

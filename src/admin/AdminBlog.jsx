@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { api, uploadImages } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 import ImageUploader from './ImageUploader'
+import { useToast } from './ToastContext'
 
 const EMPTY_POST = { titulo: '', resumen: '', imagen: '', categoria: 'General', contenido: '', publicado: false }
 
@@ -11,6 +12,7 @@ function formatDate(d) {
 }
 
 export default function AdminBlog() {
+  const toast = useToast()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState('list') // 'list' | 'editor'
@@ -84,25 +86,47 @@ export default function AdminBlog() {
         imagen = urls[0] || imagen
       }
       const body = { ...form, imagen, contenido }
-      if (!editing) await api.post('/api/blog', body)
+      const isCreate = !editing
+      if (isCreate) await api.post('/api/blog', body)
       else await api.put(`/api/blog/${editing.id}`, body)
-      setAlert({ type: 'success', msg: !editing ? 'Post creado.' : 'Post actualizado.' })
+      setAlert(null)
+      toast.success(isCreate ? 'Post creado.' : 'Post actualizado.')
       load()
       if (modalOpen) closeModal()
       else backToList()
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'Error al guardar' })
+      const msg = err.message || 'Error al guardar'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally { setSaving(false) }
   }
 
   async function remove(id) {
     if (!confirm('¿Eliminar este post?')) return
-    try { await api.delete(`/api/blog/${id}`); load() } catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.delete(`/api/blog/${id}`)
+      setAlert(null)
+      toast.success('Post eliminado.')
+      load()
+    } catch (err) {
+      const msg = err.message || 'No se pudo eliminar el post'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   async function togglePublicado(post) {
-    try { await api.put(`/api/blog/${post.id}`, { ...post, publicado: !post.publicado }); load() }
-    catch (err) { setAlert({ type: 'error', msg: err.message }) }
+    try {
+      await api.put(`/api/blog/${post.id}`, { ...post, publicado: !post.publicado })
+      setAlert(null)
+      toast.success(!post.publicado ? 'Post publicado.' : 'Post despublicado.')
+      load()
+    }
+    catch (err) {
+      const msg = err.message || 'No se pudo actualizar el post'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
+    }
   }
 
   if (view === 'editor') {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { api, uploadImages } from '../lib/api'
 import { SITE_IMAGE_DEFAULTS } from '../lib/siteImages'
 import ImageUploader from './ImageUploader'
+import { useToast } from './ToastContext'
 
 const fallbackItems = SITE_IMAGE_DEFAULTS.map(image => ({
   ...image,
@@ -10,6 +11,7 @@ const fallbackItems = SITE_IMAGE_DEFAULTS.map(image => ({
 }))
 
 export default function AdminSiteImages() {
+  const toast = useToast()
   const [items, setItems] = useState(fallbackItems)
   const [pending, setPending] = useState({})
   const [savingKey, setSavingKey] = useState('')
@@ -56,9 +58,12 @@ export default function AdminSiteImages() {
 
       setItems(prev => prev.map(current => current.key === item.key ? saved : current))
       setPending(prev => ({ ...prev, [item.key]: [] }))
-      setAlert({ type: 'success', msg: 'Imagen actualizada.' })
+      setAlert(null)
+      toast.success('Imagen actualizada.')
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'No se pudo guardar la imagen' })
+      const msg = err.message || 'No se pudo guardar la imagen'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally {
       setSavingKey('')
     }
@@ -75,9 +80,12 @@ export default function AdminSiteImages() {
       })
       setItems(prev => prev.map(current => current.key === item.key ? saved : current))
       setPending(prev => ({ ...prev, [item.key]: [] }))
-      setAlert({ type: 'success', msg: 'Imagen restaurada.' })
+      setAlert(null)
+      toast.success('Imagen restaurada.')
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'No se pudo restaurar la imagen' })
+      const msg = err.message || 'No se pudo restaurar la imagen'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally {
       setSavingKey('')
     }

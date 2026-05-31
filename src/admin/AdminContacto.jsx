@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
+import { useToast } from './ToastContext'
 
 const LABELS = {
   email: 'Email de contacto',
@@ -11,6 +12,7 @@ const LABELS = {
 }
 
 export default function AdminContacto() {
+  const toast = useToast()
   const [items, setItems] = useState([])
   const [form, setForm] = useState({})
   const [loading, setLoading] = useState(true)
@@ -38,9 +40,12 @@ export default function AdminContacto() {
     })
     try {
       await api.put('/api/contact-info', body)
-      setAlert({ type: 'success', msg: 'Datos de contacto actualizados.' })
+      setAlert(null)
+      toast.success('Datos de contacto actualizados.')
     } catch (err) {
-      setAlert({ type: 'error', msg: err.message || 'Error al guardar' })
+      const msg = err.message || 'Error al guardar'
+      setAlert({ type: 'error', msg })
+      toast.error(msg)
     } finally { setSaving(false) }
   }
 
