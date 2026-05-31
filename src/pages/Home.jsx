@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
+import { useSiteImages } from '../lib/siteImages'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -62,6 +63,7 @@ function ContactForm() {
 
 export default function Home() {
   const ref = useFadeIn()
+  const { image } = useSiteImages()
   const [contact, setContact] = useState({ email: 'contacto@kadimasalud.com.ar', whatsapp: '5491100000000', instagram: 'KadimaSalud' })
 
   useEffect(() => {
@@ -91,9 +93,15 @@ export default function Home() {
           </div>
           <div className="hero__visual fade-in">
             <div className="hero__collage">
-              <div className="hero__collage-item hero__collage-item--large"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80" alt="Gestión en salud" /></div>
-              <div className="hero__collage-item"><img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&q=80" alt="Profesional de salud" /></div>
-              <div className="hero__collage-item"><img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80" alt="Capacitación médica" /></div>
+              <div className="hero__collage-item hero__collage-item--large">
+                <img src={image('home.hero.main').url} alt={image('home.hero.main').alt} />
+              </div>
+              <div className="hero__collage-item">
+                <img src={image('home.hero.secondary').url} alt={image('home.hero.secondary').alt} />
+              </div>
+              <div className="hero__collage-item">
+                <img src={image('home.hero.training').url} alt={image('home.hero.training').alt} />
+              </div>
             </div>
           </div>
         </div>

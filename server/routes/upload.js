@@ -17,17 +17,29 @@ const storage = multer.diskStorage({
   },
 })
 
+const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp'])
+const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp'])
+
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true)
-    else cb(new Error('Solo se permiten archivos de imagen'))
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (allowedMimeTypes.has(file.mimetype) && allowedExtensions.has(ext)) cb(null, true)
+    else cb(new Error('Solo se permiten imagenes JPG, PNG o WebP'))
   },
 })
 
+function handleUpload(req, res, next) {
+  upload.array('images', 10)(req, res, err => {
+    if (!err) return next()
+    const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Cada imagen debe pesar menos de 5 MB' : err.message
+    return res.status(400).json({ error: msg })
+  })
+}
+
 // POST /api/upload  — sube hasta 10 imágenes, devuelve sus URLs
-router.post('/', authMiddleware, upload.array('images', 10), (req, res) => {
+router.post('/', authMiddleware, handleUpload, (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No se recibieron archivos' })
   }

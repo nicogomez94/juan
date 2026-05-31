@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import brandLogo from '../assets/kadima-brand.svg'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -19,9 +20,8 @@ export default function Navbar() {
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar">
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__logo">
-          <i className="fas fa-shield-heart" />
-          <span>Kadima <strong>Salud</strong></span>
+        <Link to="/" className="navbar__logo" aria-label="Kadima Salud">
+          <img className="navbar__brand-image" src={brandLogo} alt="Kadima Salud" />
         </Link>
         <button
           className="navbar__toggle"

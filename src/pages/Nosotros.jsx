@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
+import { useSiteImages } from '../lib/siteImages'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -20,6 +21,7 @@ function useFadeIn() {
 
 export default function Nosotros() {
   const ref = useFadeIn()
+  const { image } = useSiteImages()
   return (
     <div ref={ref}>
       <Navbar />
@@ -34,7 +36,7 @@ export default function Nosotros() {
       <section className="nosotros">
         <div className="container nosotros__inner">
           <div className="nosotros__image fade-in">
-            <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=700&q=80" alt="Equipo Kadima Salud" />
+            <img src={image('nosotros.intro.team').url} alt={image('nosotros.intro.team').alt} />
             <div className="nosotros__badge-float">
               <i className="fas fa-shield-heart" />
               <div><strong>Trayectoria</strong><span>en el sector salud</span></div>

@@ -56,3 +56,16 @@ model BlogPost {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
+
+model SiteImage {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique
+  label      String
+  section    String
+  url        String?
+  defaultUrl String
+  alt        String
+  ratio      String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

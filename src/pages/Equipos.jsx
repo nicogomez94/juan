@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
+import { useSiteImages } from '../lib/siteImages'
 
 function useFadeIn(deps = []) {
   const ref = useRef(null)
@@ -23,6 +24,7 @@ function useFadeIn(deps = []) {
 export default function Equipos() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const { image } = useSiteImages()
   const ref = useFadeIn([items])
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function Equipos() {
             </div>
           </div>
           <div className="equipos-intro__image fade-in">
-            <img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80" alt="Equipo médico quirúrgico" />
+            <img src={image('equipos.intro.medical').url} alt={image('equipos.intro.medical').alt} />
           </div>
         </div>
       </section>

@@ -11,8 +11,9 @@ export default function AdminDashboard() {
       api.get('/api/capacitaciones/all').then(d => d.length).catch(() => 0),
       api.get('/api/equipos/all').then(d => d.length).catch(() => 0),
       api.get('/api/blog/all').then(d => ({ total: d.length, pub: d.filter(p => p.publicado).length, draft: d.filter(p => !p.publicado).length })).catch(() => ({ total: 0, pub: 0, draft: 0 })),
-    ]).then(([caps, equips, blog]) => {
-      setStats({ caps, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft })
+      api.get('/api/site-images/all').then(d => d.filter(image => image.customUrl).length).catch(() => 0),
+    ]).then(([caps, equips, blog, customImages]) => {
+      setStats({ caps, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft, customImages })
       setLoading(false)
     })
   }, [])
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
     { label: 'Equipos médicos', value: stats.equips, icon: 'fa-stethoscope', color: 'navy', to: '/admin/equipos' },
     { label: 'Posts publicados', value: stats.blogPub, icon: 'fa-circle-check', color: 'accent', to: '/admin/blog' },
     { label: 'Borradores', value: stats.blogDraft, icon: 'fa-file-pen', color: 'orange', to: '/admin/blog' },
+    { label: 'Imágenes editadas', value: stats.customImages, icon: 'fa-images', color: 'teal', to: '/admin/imagenes' },
   ]
 
   return (
@@ -63,6 +65,7 @@ export default function AdminDashboard() {
             { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
             { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
             { to: '/admin/blog', icon: 'fa-newspaper', label: 'Blog' },
+            { to: '/admin/imagenes', icon: 'fa-images', label: 'Imágenes del sitio' },
           ].map(l => (
             <Link key={l.to} to={l.to} className="btn btn--outline" style={{ fontSize: '0.875rem', padding: '0.5rem 1.125rem' }}>
               <i className={`fas ${l.icon}`} /> {l.label}

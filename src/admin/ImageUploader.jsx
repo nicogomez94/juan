@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * ImageUploader
@@ -7,21 +7,47 @@ import { useRef, useState } from 'react'
  *  - onExistingRemove : () => void — callback cuando se borra la imagen existente
  *  - onFilesChange    : (files: File[]) => void — callback cuando cambia la lista de archivos pendientes
  */
-export default function ImageUploader({ existingUrl, onExistingRemove, onFilesChange }) {
+export default function ImageUploader({ existingUrl, onExistingRemove, onFilesChange, maxFiles = 10, maxSizeMb = 5, helperText = null, canRemoveExisting = true }) {
   const [items, setItems] = useState([]) // { id, file, preview }[]
   const [dragging, setDragging] = useState(false)
+  const [error, setError] = useState('')
   const inputRef = useRef(null)
+  const itemsRef = useRef([])
+
+  useEffect(() => {
+    itemsRef.current = items
+  }, [items])
+
+  useEffect(() => {
+    return () => itemsRef.current.forEach(item => URL.revokeObjectURL(item.preview))
+  }, [])
 
   function addFiles(fileList) {
-    const newItems = Array.from(fileList)
+    setError('')
+    const accepted = Array.from(fileList)
       .filter(f => f.type.startsWith('image/'))
+      .filter(f => {
+        if (f.size <= maxSizeMb * 1024 * 1024) return true
+        setError(`La imagen no puede superar ${maxSizeMb} MB.`)
+        return false
+      })
+      .slice(0, maxFiles)
+
+    const newItems = accepted
       .map(file => ({
         id: Math.random().toString(36).slice(2),
         file,
         preview: URL.createObjectURL(file),
       }))
     if (!newItems.length) return
-    const updated = [...items, ...newItems]
+
+    const base = maxFiles === 1 ? [] : items
+    if (maxFiles === 1) items.forEach(item => URL.revokeObjectURL(item.preview))
+    const nextItems = [...base, ...newItems]
+    const updated = nextItems.slice(-maxFiles)
+    nextItems
+      .filter(item => !updated.some(kept => kept.id === item.id))
+      .forEach(item => URL.revokeObjectURL(item.preview))
     setItems(updated)
     onFilesChange(updated.map(i => i.file))
     // reset input so same file can be re-selected
@@ -56,17 +82,19 @@ export default function ImageUploader({ existingUrl, onExistingRemove, onFilesCh
       >
         <i className="fas fa-cloud-arrow-up img-uploader__icon" />
         <span className="img-uploader__hint">Click o arrastrá imágenes aquí</span>
-        <span className="img-uploader__sub">JPG, PNG, WebP · máx. 5 MB · múltiples a la vez</span>
+        <span className="img-uploader__sub">{helperText || `JPG, PNG, WebP · max. ${maxSizeMb} MB${maxFiles === 1 ? '' : ' · multiples a la vez'}`}</span>
       </div>
 
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
-        multiple
+        multiple={maxFiles > 1}
         hidden
         onChange={e => addFiles(e.target.files)}
       />
+
+      {error && <div className="admin-alert admin-alert--error img-uploader__error"><i className="fas fa-circle-exclamation" /> {error}</div>}
 
       {/* Preview grid */}
       {hasContent && (
@@ -78,14 +106,16 @@ export default function ImageUploader({ existingUrl, onExistingRemove, onFilesCh
               <span className="img-uploader__badge img-uploader__badge--saved">
                 <i className="fas fa-check" /> Guardada
               </span>
-              <button
-                type="button"
-                className="img-uploader__del"
-                title="Quitar imagen"
-                onClick={onExistingRemove}
-              >
-                <i className="fas fa-xmark" />
-              </button>
+              {canRemoveExisting && (
+                <button
+                  type="button"
+                  className="img-uploader__del"
+                  title="Quitar imagen"
+                  onClick={onExistingRemove}
+                >
+                  <i className="fas fa-xmark" />
+                </button>
+              )}
             </div>
           )}
 

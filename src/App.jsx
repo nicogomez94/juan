@@ -14,6 +14,7 @@ import AdminCapacitaciones from './admin/AdminCapacitaciones'
 import AdminEquipos from './admin/AdminEquipos'
 import AdminContacto from './admin/AdminContacto'
 import AdminBlog from './admin/AdminBlog'
+import AdminSiteImages from './admin/AdminSiteImages'
 import ProtectedRoute from './admin/ProtectedRoute'
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="equipos" element={<AdminEquipos />} />
           <Route path="contacto" element={<AdminContacto />} />
           <Route path="blog" element={<AdminBlog />} />
+          <Route path="imagenes" element={<AdminSiteImages />} />
         </Route>
       </Routes>
     </BrowserRouter>

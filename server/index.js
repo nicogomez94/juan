@@ -18,6 +18,7 @@ app.use('/api/capacitaciones', require('./routes/capacitaciones'))
 app.use('/api/equipos', require('./routes/equipos'))
 app.use('/api/contact-info', require('./routes/contactInfo'))
 app.use('/api/blog', require('./routes/blog'))
+app.use('/api/site-images', require('./routes/siteImages'))
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', ts: new Date() }))
 

@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client')
+const { SITE_IMAGES } = require('../lib/siteImages')
 const prisma = new PrismaClient()
 
 async function main() {
@@ -90,6 +91,11 @@ async function main() {
     ],
   })
   console.log('✓ ContactInfo seeded')
+
+  // ── Site Images ─────────────────────────────────────────────────
+  await prisma.siteImage.deleteMany()
+  await prisma.siteImage.createMany({ data: SITE_IMAGES })
+  console.log('✓ SiteImage seeded')
 
   // ── Blog demo post ─────────────────────────────────────────────
   await prisma.blogPost.deleteMany()

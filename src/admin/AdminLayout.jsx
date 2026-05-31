@@ -9,6 +9,7 @@ const navItems = [
   { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
   { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
   { to: '/admin/blog', icon: 'fa-newspaper', label: 'Blog' },
+  { to: '/admin/imagenes', icon: 'fa-images', label: 'Imágenes del sitio' },
 ]
 
 export default function AdminLayout() {

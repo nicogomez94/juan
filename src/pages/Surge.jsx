@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
+import { useSiteImages } from '../lib/siteImages'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -20,6 +21,7 @@ function useFadeIn() {
 
 export default function Surge() {
   const ref = useFadeIn()
+  const { image } = useSiteImages()
   return (
     <div ref={ref}>
       <Navbar />
@@ -41,7 +43,7 @@ export default function Surge() {
             <Link to="/contacto" className="btn btn--primary btn--lg">Evaluar mi organización</Link>
           </div>
           <div className="surge-intro__visual fade-in">
-            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" alt="Gestión de expedientes SURGE" />
+            <img src={image('surge.intro.documents').url} alt={image('surge.intro.documents').alt} />
           </div>
         </div>
       </section>
