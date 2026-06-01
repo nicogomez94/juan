@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import brandLogo from '../assets/kadima-brand.svg'
+import brandLogo from '../assets/otropng.png'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -21,13 +21,7 @@ export default function Navbar() {
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar">
       <div className="container navbar__inner">
         <Link to="/" className="navbar__logo" aria-label="Kadima Salud">
-          <span className="navbar__brand-mark" aria-hidden="true">
-            <img src={brandLogo} alt="" />
-          </span>
-          <span className="navbar__brand-text">
-            <span className="navbar__brand-name">Kadima</span>
-            <span className="navbar__brand-subtitle">Consultoría en Salud</span>
-          </span>
+          <img className="navbar__brand-image" src={brandLogo} alt="Kadima Consultoría en Salud" />
         </Link>
         <button
           className="navbar__toggle"

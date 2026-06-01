@@ -186,6 +186,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .navbar__logo i { font-size: 1.375rem; color: var(--color-secondary); }
 .navbar__logo strong { color: var(--color-secondary); }
+.navbar__brand-image {
+  width: auto;
+  height: 3.1rem;
+  max-width: 13.5rem;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
 
 .navbar__links {
   display: none;
@@ -236,6 +243,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .navbar__cta { display: inline-flex; }
   .navbar__toggle { display: none; }
   .navbar__cta-mobile-item { display: none !important; }
+  .navbar__brand-image {
+    height: 3.35rem;
+    max-width: 15rem;
+  }
 }
 
 /* ================================================

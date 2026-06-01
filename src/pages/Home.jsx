@@ -6,6 +6,7 @@ import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 import { useSiteImages } from '../lib/siteImages'
+import popupImage from '../../image.png'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -65,14 +66,43 @@ export default function Home() {
   const ref = useFadeIn()
   const { image } = useSiteImages()
   const [contact, setContact] = useState({ email: 'contacto@kadimasalud.com.ar', whatsapp: '5491100000000', instagram: 'KadimaSalud' })
+  const [showLightbox, setShowLightbox] = useState(true)
 
   useEffect(() => {
     api.get('/api/contact-info').then(d => { if (d.map) setContact(prev => ({ ...prev, ...d.map })) }).catch(() => {})
   }, [])
 
+  useEffect(() => {
+    if (!showLightbox) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') setShowLightbox(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showLightbox])
+
   return (
     <div ref={ref}>
       <Navbar />
+
+      {showLightbox && (
+        <div className="home-lightbox" role="presentation" onClick={() => setShowLightbox(false)}>
+          <div className="home-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Promoción destacada" onClick={e => e.stopPropagation()}>
+            <button type="button" className="home-lightbox__close" aria-label="Cerrar popup" onClick={() => setShowLightbox(false)}>
+              <i className="fas fa-times" aria-hidden="true" />
+            </button>
+            <img src={popupImage} alt="Promoción destacada de Kadima Salud" className="home-lightbox__image" />
+          </div>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="hero" id="inicio">
