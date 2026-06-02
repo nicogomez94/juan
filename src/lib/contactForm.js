@@ -22,17 +22,22 @@ export function buildContactMessage({ celular = '', consulta = '' }) {
   return parts.join('\n\n')
 }
 
-export function getContactFormValidationError({ nombre = '', apellido = '', email = '', consulta = '' }) {
+export function getContactFormValidationError({ nombre = '', apellido = '', email = '', celular = '', consulta = '' }) {
   const trimmedName = normalizeFullName(nombre, apellido)
   const trimmedEmail = email.trim()
+  const trimmedPhone = celular.trim()
   const trimmedMessage = consulta.trim()
 
-  if (!trimmedName || !trimmedEmail || !trimmedMessage) {
-    return 'Completá nombre, apellido, email y consulta.'
+  if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedMessage) {
+    return 'Completá nombre, apellido, celular, email y consulta.'
   }
 
   if (!CONTACT_EMAIL_REGEX.test(trimmedEmail)) {
     return 'Ingresá un email válido.'
+  }
+
+  if (trimmedPhone.replace(/\D/g, '').length < 6) {
+    return 'Ingresá un celular válido.'
   }
 
   if (!CONTACT_TO || !CONTACT_SITE) {

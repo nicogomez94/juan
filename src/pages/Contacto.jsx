@@ -140,7 +140,7 @@ export default function Contacto() {
                     <div className="form__group"><label>Apellido</label><input name="apellido" value={form.apellido} onChange={handle} placeholder="Tu apellido" required /></div>
                   </div>
                   <div className="form__row form__row--two">
-                    <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 ..." /></div>
+                    <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 ..." required inputMode="tel" autoComplete="tel" /></div>
                     <div className="form__group"><label>Email</label><input type="email" name="email" value={form.email} onChange={handle} placeholder="tu@email.com" required /></div>
                   </div>
                   <div className="form__group"><label>Consulta</label><textarea name="consulta" value={form.consulta} onChange={handle} rows="5" placeholder="Contanos en qué podemos ayudarte..." required /></div>

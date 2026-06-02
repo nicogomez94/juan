@@ -82,7 +82,7 @@ function ContactForm() {
       </div>
       <div className="form__row form__row--two">
         <div className="form__group"><label>Email</label><input type="email" name="email" value={form.email} onChange={handle} placeholder="tu@email.com" required /></div>
-        <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 0000-0000" /></div>
+        <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 0000-0000" required inputMode="tel" autoComplete="tel" /></div>
       </div>
       <div className="form__group"><label>Consulta</label><textarea name="consulta" value={form.consulta} onChange={handle} rows="4" placeholder="Contanos en qué podemos ayudarte..." required /></div>
       {error && <p className="form__error" role="alert">{error}</p>}
