@@ -68,7 +68,7 @@ function ContactForm() {
   }
 
   if (sent) return (
-    <div className="form__success">
+    <div className="form__success" role="status" aria-live="polite">
       <i className="fas fa-check-circle" />
       <p>¡Gracias! Tu consulta fue enviada. Te contactamos pronto.</p>
     </div>
@@ -85,7 +85,7 @@ function ContactForm() {
         <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 0000-0000" required inputMode="tel" autoComplete="tel" /></div>
       </div>
       <div className="form__group"><label>Consulta</label><textarea name="consulta" value={form.consulta} onChange={handle} rows="4" placeholder="Contanos en qué podemos ayudarte..." required /></div>
-      {error && <p className="form__error" role="alert">{error}</p>}
+      {error && <p className="form__error" role="alert" aria-live="assertive">{error}</p>}
       <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
         {loading ? 'Enviando...' : 'Enviar consulta'}
       </button>

@@ -129,7 +129,7 @@ export default function Contacto() {
 
             <div className="contacto__form-wrap fade-in">
               {sent ? (
-                <div className="form__success">
+                <div className="form__success" role="status" aria-live="polite">
                   <i className="fas fa-circle-check" />
                   <p>¡Gracias! Tu consulta fue enviada correctamente. Te contactaremos a la brevedad.</p>
                 </div>
@@ -144,7 +144,7 @@ export default function Contacto() {
                     <div className="form__group"><label>Email</label><input type="email" name="email" value={form.email} onChange={handle} placeholder="tu@email.com" required /></div>
                   </div>
                   <div className="form__group"><label>Consulta</label><textarea name="consulta" value={form.consulta} onChange={handle} rows="5" placeholder="Contanos en qué podemos ayudarte..." required /></div>
-                  {error && <p className="form__error" role="alert">{error}</p>}
+                  {error && <p className="form__error" role="alert" aria-live="assertive">{error}</p>}
                   <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
                     <i className="fas fa-paper-plane" /> {loading ? 'Enviando...' : 'Enviar consulta'}
                   </button>

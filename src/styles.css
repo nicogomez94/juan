@@ -953,6 +953,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   font-size: 0.875rem;
   font-weight: 600;
   color: #b42318;
+  background: #fff4f2;
+  border: 1px solid rgba(180, 35, 24, 0.22);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.875rem;
 }
 .form__success {
   display: flex;
