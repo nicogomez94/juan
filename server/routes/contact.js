@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 
 const CONTACT_SERVICE_URL = 'https://contact-form-service-e8aa.onrender.com/api/contact'
-const DEFAULT_CONTACT_TO = 'contacto@kadimasalud.com.ar'
+const DEFAULT_CONTACT_TO = 'nicolasgomez94@gmail.com'
 const DEFAULT_CONTACT_SITE = 'Kadima Salud'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
