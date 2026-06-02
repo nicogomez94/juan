@@ -1,8 +1,10 @@
 const CONTACT_SERVICE_URL = 'https://contact-form-service-e8aa.onrender.com/api/contact'
+const DEFAULT_CONTACT_TO = 'contacto@kadimasalud.com.ar'
+const DEFAULT_CONTACT_SITE = 'Kadima Salud'
 
 export const CONTACT_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-export const CONTACT_TO = import.meta.env.VITE_CONTACT_TO ?? ''
-export const CONTACT_SITE = import.meta.env.VITE_CONTACT_SITE ?? ''
+export const CONTACT_TO = (import.meta.env.VITE_CONTACT_TO || DEFAULT_CONTACT_TO).trim()
+export const CONTACT_SITE = (import.meta.env.VITE_CONTACT_SITE || DEFAULT_CONTACT_SITE).trim()
 
 export function normalizeFullName(nombre = '', apellido = '') {
   return [nombre, apellido]
