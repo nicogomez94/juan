@@ -948,6 +948,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   box-shadow: 0 0 0 3px rgba(12, 123, 128, 0.12);
   background: var(--color-white);
 }
+.form__error {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #b42318;
+}
 .form__success {
   display: flex;
   align-items: flex-start;
@@ -960,6 +966,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .form__success i { font-size: 1.25rem; color: var(--color-secondary); flex-shrink: 0; }
 .form__success p { font-size: 0.9375rem; color: var(--color-secondary); }
+.contacto__form button:disabled,
+.contact-form button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
 
 @media (min-width: 768px) {
   .form__row--two { flex-direction: row; gap: 1rem; }

@@ -5,6 +5,12 @@ import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
+import {
+  buildContactMessage,
+  getContactFormValidationError,
+  normalizeFullName,
+  sendContactForm,
+} from '../lib/contactForm'
 import { useSiteImages } from '../lib/siteImages'
 import popupImage from '../../image.png'
 
@@ -28,13 +34,37 @@ function ContactForm() {
   const [form, setForm] = useState({ nombre: d.nombre||'', apellido: d.apellido||'', email: d.email||'', celular: d.celular||'', consulta: d.consulta||'' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handle(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })) }
+  function handle(e) {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+    if (error) setError('')
+  }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault()
+    const validationError = getContactFormValidationError(form)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
     setLoading(true)
-    setTimeout(() => { setLoading(false); setSent(true) }, 1400)
+    setError('')
+
+    try {
+      await sendContactForm({
+        name: normalizeFullName(form.nombre, form.apellido),
+        email: form.email.trim(),
+        message: buildContactMessage({ celular: form.celular, consulta: form.consulta }),
+      })
+      setForm({ nombre: '', apellido: '', email: '', celular: '', consulta: '' })
+      setSent(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo enviar la consulta.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (sent) return (
@@ -55,6 +85,7 @@ function ContactForm() {
         <div className="form__group"><label>Celular</label><input type="tel" name="celular" value={form.celular} onChange={handle} placeholder="+54 9 11 0000-0000" /></div>
       </div>
       <div className="form__group"><label>Consulta</label><textarea name="consulta" value={form.consulta} onChange={handle} rows="4" placeholder="Contanos en qué podemos ayudarte..." required /></div>
+      {error && <p className="form__error" role="alert">{error}</p>}
       <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
         {loading ? 'Enviando...' : 'Enviar consulta'}
       </button>
