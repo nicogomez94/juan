@@ -153,76 +153,25 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .fade-in:nth-child(6) { transition-delay: 0.25s; }
 
 /* ================================================
-   HOME LIGHTBOX
+   HOME START
    ================================================ */
-.home-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
-  background: rgba(5, 18, 28, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-.home-lightbox__dialog {
-  position: relative;
-  display: flex;
-  max-width: min(96vw, 1942px);
-  max-height: min(92vh, 809px);
-  border-radius: var(--radius-md);
+.home-start {
   background: var(--color-white);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
 }
-.home-lightbox__image {
-  width: auto;
-  max-width: min(96vw, 1942px);
-  max-height: min(92vh, 809px);
-  border-radius: var(--radius-md);
-  object-fit: contain;
+.home-start__banner {
+  background: #f7fbfd;
 }
-.home-lightbox__close {
-  position: absolute;
-  top: -0.875rem;
-  right: -0.875rem;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: var(--color-white);
-  color: var(--color-primary);
-  box-shadow: var(--shadow-lg);
-  transition: background var(--transition), color var(--transition), transform var(--transition);
-}
-.home-lightbox__close:hover,
-.home-lightbox__close:focus-visible {
-  background: var(--color-secondary);
-  color: var(--color-white);
-  transform: scale(1.04);
-}
-.home-lightbox__close:focus-visible {
-  outline: 3px solid rgba(46, 201, 197, 0.45);
-  outline-offset: 3px;
+.home-start__banner img {
+  width: 100%;
+  max-height: min(41.7vw, 620px);
+  object-fit: cover;
+  object-position: center;
 }
 
-@media (max-width: 640px) {
-  .home-lightbox {
-    align-items: flex-start;
-    padding: 4.5rem 0.75rem 1rem;
-  }
-  .home-lightbox__dialog,
-  .home-lightbox__image {
-    max-width: 100%;
-    max-height: calc(100vh - 5.5rem);
-  }
-  .home-lightbox__close {
-    top: -3.25rem;
-    right: 0;
+@media (max-width: 720px) {
+  .home-start__banner img {
+    min-height: 210px;
+    object-position: 38% center;
   }
 }
 
@@ -241,6 +190,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   transition: box-shadow var(--transition);
 }
 .navbar.scrolled { box-shadow: var(--shadow-md); }
+.navbar--home {
+  position: sticky;
+  top: 0;
+  border-top: 1px solid rgba(216, 232, 238, 0.72);
+}
 
 .navbar__inner {
   display: flex;

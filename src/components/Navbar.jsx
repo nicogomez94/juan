@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import brandLogo from '../assets/otropng.png'
 
-export default function Navbar() {
+export default function Navbar({ variant = 'default' }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const location = useLocation()
@@ -17,8 +17,10 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path ? 'active' : ''
 
+  const className = `navbar${variant === 'home' ? ' navbar--home' : ''}${scrolled ? ' scrolled' : ''}`
+
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar">
+    <nav className={className} id="navbar">
       <div className="container navbar__inner">
         <Link to="/" className="navbar__logo" aria-label="Kadima Salud">
           <img className="navbar__brand-image" src={brandLogo} alt="Kadima Consultoría en Salud" />

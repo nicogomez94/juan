@@ -11,8 +11,7 @@ import {
   normalizeFullName,
   sendContactForm,
 } from '../lib/contactForm'
-import { useSiteImages } from '../lib/siteImages'
-import popupImage from '../../image.png'
+import homeBanner from '../../image.png'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -95,78 +94,20 @@ function ContactForm() {
 
 export default function Home() {
   const ref = useFadeIn()
-  const { image } = useSiteImages()
   const [contact, setContact] = useState({ email: 'contacto@kadimasalud.com.ar', whatsapp: '5491100000000', instagram: 'KadimaSalud' })
-  const [showLightbox, setShowLightbox] = useState(true)
 
   useEffect(() => {
     api.get('/api/contact-info').then(d => { if (d.map) setContact(prev => ({ ...prev, ...d.map })) }).catch(() => {})
   }, [])
 
-  useEffect(() => {
-    if (!showLightbox) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    function handleKeyDown(e) {
-      if (e.key === 'Escape') setShowLightbox(false)
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [showLightbox])
-
   return (
     <div ref={ref}>
-      <Navbar />
-
-      {showLightbox && (
-        <div className="home-lightbox" role="presentation" onClick={() => setShowLightbox(false)}>
-          <div className="home-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Promoción destacada" onClick={e => e.stopPropagation()}>
-            <button type="button" className="home-lightbox__close" aria-label="Cerrar popup" onClick={() => setShowLightbox(false)}>
-              <i className="fas fa-times" aria-hidden="true" />
-            </button>
-            <img src={popupImage} alt="Promoción destacada de Kadima Salud" className="home-lightbox__image" />
-          </div>
+      <header className="home-start" id="inicio">
+        <div className="home-start__banner">
+          <img src={homeBanner} alt="Kadima Consultoría en Salud" />
         </div>
-      )}
-
-      {/* HERO */}
-      <section className="hero" id="inicio">
-        <div className="container hero__inner">
-          <div className="hero__content fade-in">
-            <span className="hero__badge"><i className="fas fa-star" /> Expertos en Administración de Salud</span>
-            <h1 className="hero__title">Soluciones estratégicas para el <span className="hero__highlight">sector salud</span></h1>
-            <p className="hero__subtitle">Acompañamos a obras sociales, prepagas, gerenciadoras e instituciones médicas con asesoramiento profesional, capacitaciones especializadas y recupero de costos ante la Superintendencia.</p>
-            <div className="hero__actions">
-              <Link to="/contacto" className="btn btn--primary btn--lg">Consultar ahora</Link>
-              <Link to="/nosotros" className="btn btn--outline btn--lg">Conocer más</Link>
-            </div>
-            <div className="hero__trust">
-              <div className="hero__trust-item"><i className="fas fa-check-circle" /><span>Obras sociales</span></div>
-              <div className="hero__trust-item"><i className="fas fa-check-circle" /><span>Medicina prepaga</span></div>
-              <div className="hero__trust-item"><i className="fas fa-check-circle" /><span>Instituciones médicas</span></div>
-            </div>
-          </div>
-          <div className="hero__visual fade-in">
-            <div className="hero__collage">
-              <div className="hero__collage-item hero__collage-item--large">
-                <img src={image('home.hero.main').url} alt={image('home.hero.main').alt} />
-              </div>
-              <div className="hero__collage-item">
-                <img src={image('home.hero.secondary').url} alt={image('home.hero.secondary').alt} />
-              </div>
-              <div className="hero__collage-item">
-                <img src={image('home.hero.training').url} alt={image('home.hero.training').alt} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        <Navbar variant="home" />
+      </header>
 
       {/* STATS */}
       <section className="stats-strip">
