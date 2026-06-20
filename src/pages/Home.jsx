@@ -11,7 +11,8 @@ import {
   normalizeFullName,
   sendContactForm,
 } from '../lib/contactForm'
-import homeBanner from '../../image.png'
+import horizontalBanner from '../../horizontal.svg'
+import verticalBanner from '../../vertical.svg'
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -104,7 +105,10 @@ export default function Home() {
     <div ref={ref}>
       <header className="home-start" id="inicio">
         <div className="home-start__banner">
-          <img src={homeBanner} alt="Kadima Consultoría en Salud" />
+          <picture>
+            <source media="(min-width: 721px)" srcSet={horizontalBanner} />
+            <img src={verticalBanner} alt="Kadima Consultoría en Salud" />
+          </picture>
         </div>
         <Navbar variant="home" />
       </header>

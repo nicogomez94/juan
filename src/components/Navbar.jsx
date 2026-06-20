@@ -22,9 +22,6 @@ export default function Navbar({ variant = 'default' }) {
   return (
     <nav className={className} id="navbar">
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__logo" aria-label="Kadima Salud">
-          <img className="navbar__brand-image" src={brandLogo} alt="Kadima Consultoría en Salud" />
-        </Link>
         <button
           className="navbar__toggle"
           aria-label="Abrir menú"
@@ -32,6 +29,11 @@ export default function Navbar({ variant = 'default' }) {
         >
           <i className={`fas ${open ? 'fa-xmark' : 'fa-bars'}`} />
         </button>
+        {variant !== 'home' && (
+          <Link to="/" className="navbar__logo" aria-label="Kadima Salud">
+            <img className="navbar__brand-image" src={brandLogo} alt="Kadima Consultoría en Salud" />
+          </Link>
+        )}
         <ul className={`navbar__links${open ? ' open' : ''}`}>
           <li><Link to="/nosotros" className={isActive('/nosotros')}>Nosotros</Link></li>
           <li><Link to="/capacitaciones" className={isActive('/capacitaciones')}>Capacitaciones</Link></li>

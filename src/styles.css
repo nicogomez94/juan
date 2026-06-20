@@ -161,18 +161,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .home-start__banner {
   background: #f7fbfd;
 }
+.home-start__banner picture {
+  display: block;
+}
 .home-start__banner img {
   width: 100%;
-  max-height: min(41.7vw, 620px);
-  object-fit: cover;
-  object-position: center;
-}
-
-@media (max-width: 720px) {
-  .home-start__banner img {
-    min-height: 210px;
-    object-position: 38% center;
-  }
+  height: auto;
+  object-fit: contain;
 }
 
 /* ================================================
@@ -193,7 +188,34 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .navbar--home {
   position: sticky;
   top: 0;
-  border-top: 1px solid rgba(216, 232, 238, 0.72);
+  background: linear-gradient(180deg, #0a2236 0%, #0d2a42 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: none;
+  box-shadow: 0 8px 28px rgba(10, 30, 46, 0.18);
+}
+.navbar--home .navbar__logo {
+  display: none;
+}
+.navbar--home .navbar__links a {
+  color: rgba(255, 255, 255, 0.9);
+}
+.navbar--home .navbar__links a:hover,
+.navbar--home .navbar__links a.active {
+  color: var(--color-white);
+  background: rgba(255, 255, 255, 0.1);
+}
+.navbar--home .navbar__toggle {
+  color: var(--color-white);
+}
+.navbar--home .btn--primary {
+  background: var(--color-accent);
+  color: var(--color-dark);
+  border-color: var(--color-accent);
+}
+.navbar--home .btn--primary:hover {
+  background: #41d6d1;
+  border-color: #41d6d1;
+  color: var(--color-dark);
 }
 
 .navbar__inner {
@@ -376,8 +398,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
    STATS STRIP
    ================================================ */
 .stats-strip {
-  background: var(--color-dark);
-  padding: 3.5rem 0;
+  background: var(--color-white);
+  padding: 3.25rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 .stats-strip__grid {
   display: grid;
@@ -395,12 +420,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   font-family: var(--font-display);
   font-size: clamp(1.875rem, 4vw, 2.625rem);
   font-weight: 800;
-  color: var(--color-accent);
+  color: var(--color-primary);
   line-height: 1;
+  letter-spacing: -0.03em;
 }
 .stats-strip__label {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-light);
   font-weight: 500;
 }
 

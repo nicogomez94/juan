@@ -11,7 +11,7 @@ export const debugDefaults = {
   },
   adminLogin: {
     username: 'admin',
-    password: 'kadima2026',
+    password: 'admin',
   },
   capacitacion: {
     titulo: 'Nueva Capacitación',

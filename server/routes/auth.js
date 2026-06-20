@@ -7,7 +7,7 @@ const { JWT_SECRET } = require('../middleware/auth')
 router.post('/login', (req, res) => {
   const { username, password } = req.body
   const ADMIN_USER = process.env.ADMIN_USER || 'admin'
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'kadima2026'
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin'
 
   if (username !== ADMIN_USER || password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Credenciales incorrectas' })
