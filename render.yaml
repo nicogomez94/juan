@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: kadima-salud
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm --prefix server ci && npm --prefix server exec -- prisma generate --schema=server/prisma/schema.prisma && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CONTACT_TO
+        value: contacto@kadimasalud.com.ar
+      - key: CONTACT_SITE
+        value: Kadima Salud
