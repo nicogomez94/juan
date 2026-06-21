@@ -81,10 +81,16 @@ export default function Equipos() {
             <div className="equipos__grid">
               {items.map(e => (
                 <div key={e.id} className="equipo__card fade-in">
-                  <div className="equipo__card-icon"><i className={`fas ${e.icono}`} /></div>
-                  <h3>{e.nombre}</h3>
-                  <p>{e.descripcion}</p>
-                  <Link to="/contacto" className="equipo__link">Consultar disponibilidad <i className="fas fa-arrow-right" /></Link>
+                  {e.imagen && (
+                    <div className="equipo__card-image">
+                      <img src={e.imagen} alt={e.nombre} loading="lazy" />
+                    </div>
+                  )}
+                  <div className="equipo__card-body">
+                    <h3>{e.nombre}</h3>
+                    <div className="equipo__card-description" dangerouslySetInnerHTML={{ __html: e.descripcion }} />
+                    <Link to="/contacto" className="equipo__link">Consultar disponibilidad <i className="fas fa-arrow-right" /></Link>
+                  </div>
                 </div>
               ))}
             </div>

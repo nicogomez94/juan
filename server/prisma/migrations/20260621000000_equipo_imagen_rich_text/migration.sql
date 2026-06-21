@@ -1,0 +1,5 @@
+ALTER TABLE "Equipo"
+ADD COLUMN "imagen" TEXT;
+
+ALTER TABLE "Equipo"
+ALTER COLUMN "icono" SET DEFAULT '';

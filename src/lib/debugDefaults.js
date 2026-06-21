@@ -26,8 +26,8 @@ export const debugDefaults = {
   },
   equipo: {
     nombre: 'Nueva Especialidad',
-    descripcion: 'Descripción del equipo médico y sus capacidades para instituciones del sector salud.',
-    icono: 'fa-stethoscope',
+    descripcion: '<p>Descripción del equipo médico y sus capacidades para instituciones del sector salud.</p>',
+    imagen: '',
   },
   blogPost: {
     titulo: 'Artículo de ejemplo sobre gestión en salud',

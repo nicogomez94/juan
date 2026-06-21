@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { api } from '../lib/api'
+import { useEffect, useRef, useState } from 'react'
+import { api, uploadImages } from '../lib/api'
+import ImageUploader from './ImageUploader'
 import { useToast } from './ToastContext'
 
-const EMPTY = { nombre: '', descripcion: '', icono: 'fa-stethoscope', orden: 0, activo: true }
+const EMPTY = { nombre: '', descripcion: '', imagen: '', orden: 0, activo: true }
 
 export default function AdminEquipos() {
   const toast = useToast()
@@ -12,6 +13,8 @@ export default function AdminEquipos() {
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
   const [alert, setAlert] = useState(null)
+  const [pendingImage, setPendingImage] = useState([])
+  const editorRef = useRef(null)
 
   function load() {
     setLoading(true)
@@ -19,21 +22,49 @@ export default function AdminEquipos() {
   }
   useEffect(load, [])
 
-  function openCreate() { setForm(EMPTY); setModal('create') }
-  function openEdit(item) { setForm({ ...item }); setModal(item) }
-  function closeModal() { setModal(null) }
+  function openCreate() {
+    setForm(EMPTY)
+    setPendingImage([])
+    setModal('create')
+  }
+
+  function openEdit(item) {
+    setForm({ ...item, imagen: item.imagen || '' })
+    setPendingImage([])
+    setModal(item)
+  }
+
+  function closeModal() {
+    setModal(null)
+    setPendingImage([])
+  }
 
   function handle(e) {
     const { name, value, type, checked } = e.target
     setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
   }
 
+  function execCmd(cmd, val = null) {
+    editorRef.current?.focus()
+    document.execCommand(cmd, false, val)
+  }
+
   async function save(e) {
     e.preventDefault()
     setSaving(true)
-    const body = { ...form, orden: Number(form.orden) }
     const isCreate = modal === 'create'
     try {
+      let imagen = form.imagen
+      if (pendingImage.length > 0) {
+        const urls = await uploadImages(pendingImage)
+        imagen = urls[0] || imagen
+      }
+      const body = {
+        ...form,
+        descripcion: editorRef.current ? editorRef.current.innerHTML : form.descripcion,
+        imagen,
+        orden: Number(form.orden),
+      }
       if (isCreate) await api.post('/api/equipos', body)
       else await api.put(`/api/equipos/${modal.id}`, body)
       setAlert(null)
@@ -93,7 +124,7 @@ export default function AdminEquipos() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Ícono</th>
+              <th>Imagen</th>
               <th>Nombre</th>
               <th>Descripción</th>
               <th>Orden</th>
@@ -108,9 +139,16 @@ export default function AdminEquipos() {
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-gray)' }}>No hay equipos</td></tr>
             ) : items.map(item => (
               <tr key={item.id}>
-                <td><i className={`fas ${item.icono} admin-table__icon`} /></td>
+                <td>
+                  {item.imagen
+                    ? <img src={item.imagen} alt="" className="admin-table__thumb" />
+                    : <span className="admin-table__empty-image">Sin imagen</span>}
+                </td>
                 <td><strong style={{ color: 'var(--color-primary)' }}>{item.nombre}</strong></td>
-                <td style={{ maxWidth: 260, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.descripcion}</td>
+                <td
+                  className="admin-table__rich-preview"
+                  dangerouslySetInnerHTML={{ __html: item.descripcion }}
+                />
                 <td>{item.orden}</td>
                 <td>
                   <span className={`admin-table__badge ${item.activo ? 'admin-table__badge--green' : 'admin-table__badge--gray'}`}>
@@ -138,7 +176,7 @@ export default function AdminEquipos() {
 
       {modal && (
         <div className="admin-modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal() }}>
-          <div className="admin-modal">
+          <div className="admin-modal admin-modal--equipo">
             <div className="admin-modal__header">
               <h3>{modal === 'create' ? 'Nuevo equipo' : 'Editar equipo'}</h3>
               <button className="admin-modal__close" onClick={closeModal}><i className="fas fa-xmark" /></button>
@@ -146,15 +184,45 @@ export default function AdminEquipos() {
             <form onSubmit={save}>
               <div className="admin-modal__body">
                 <div className="admin-form__group"><label>Nombre *</label><input name="nombre" value={form.nombre} onChange={handle} required /></div>
-                <div className="admin-form__group"><label>Descripción</label><textarea name="descripcion" value={form.descripcion} onChange={handle} rows={3} /></div>
-                <div className="admin-form__row">
-                  <div className="admin-form__group">
-                    <label>Ícono (Font Awesome)</label>
-                    <input name="icono" value={form.icono} onChange={handle} placeholder="fa-stethoscope" />
-                    <span className="admin-form__hint">Ej: fa-stethoscope, fa-heart-pulse</span>
+                <div className="admin-form__group">
+                  <label>Descripción</label>
+                  <div className="admin-editor">
+                    <div className="admin-editor__toolbar">
+                      <button type="button" className="admin-editor__btn" title="Negrita" onClick={() => execCmd('bold')}><i className="fas fa-bold" /></button>
+                      <button type="button" className="admin-editor__btn" title="Cursiva" onClick={() => execCmd('italic')}><i className="fas fa-italic" /></button>
+                      <button type="button" className="admin-editor__btn" title="Subrayado" onClick={() => execCmd('underline')}><i className="fas fa-underline" /></button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Título H2" onClick={() => execCmd('formatBlock', 'H2')}><b>H2</b></button>
+                      <button type="button" className="admin-editor__btn" title="Párrafo" onClick={() => execCmd('formatBlock', 'P')}>¶</button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Lista con viñetas" onClick={() => execCmd('insertUnorderedList')}><i className="fas fa-list-ul" /></button>
+                      <button type="button" className="admin-editor__btn" title="Lista numerada" onClick={() => execCmd('insertOrderedList')}><i className="fas fa-list-ol" /></button>
+                      <div className="admin-editor__sep" />
+                      <button type="button" className="admin-editor__btn" title="Alinear izquierda" onClick={() => execCmd('justifyLeft')}><i className="fas fa-align-left" /></button>
+                      <button type="button" className="admin-editor__btn" title="Centrar" onClick={() => execCmd('justifyCenter')}><i className="fas fa-align-center" /></button>
+                      <button type="button" className="admin-editor__btn" title="Quitar formato" onClick={() => execCmd('removeFormat')}><i className="fas fa-eraser" /></button>
+                    </div>
+                    <div
+                      key={modal === 'create' ? 'create' : modal.id}
+                      ref={editorRef}
+                      className="admin-editor__content admin-editor__content--compact"
+                      contentEditable
+                      suppressContentEditableWarning
+                      dangerouslySetInnerHTML={{ __html: form.descripcion }}
+                    />
                   </div>
-                  <div className="admin-form__group"><label>Orden</label><input type="number" name="orden" value={form.orden} onChange={handle} min={0} /></div>
                 </div>
+                <div className="admin-form__group">
+                  <label>Imagen</label>
+                  <ImageUploader
+                    existingUrl={form.imagen}
+                    onExistingRemove={() => setForm(f => ({ ...f, imagen: '' }))}
+                    onFilesChange={setPendingImage}
+                    maxFiles={1}
+                    helperText="JPG, PNG o WebP · máximo 5 MB"
+                  />
+                </div>
+                <div className="admin-form__group admin-form__group--order"><label>Orden</label><input type="number" name="orden" value={form.orden} onChange={handle} min={0} /></div>
                 <label className="admin-toggle">
                   <input type="checkbox" name="activo" checked={form.activo} onChange={handle} />
                   <span className="admin-toggle__track" />

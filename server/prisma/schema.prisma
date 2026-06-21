@@ -28,7 +28,8 @@ model Equipo {
   id          Int      @id @default(autoincrement())
   nombre      String
   descripcion String
-  icono       String
+  icono       String   @default("")
+  imagen      String?
   orden       Int      @default(0)
   activo      Boolean  @default(true)
   createdAt   DateTime @default(now())

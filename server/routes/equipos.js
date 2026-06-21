@@ -30,9 +30,9 @@ router.get('/all', authMiddleware, async (req, res) => {
 // POST /api/equipos — admin
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { nombre, descripcion, icono, orden, activo } = req.body
+    const { nombre, descripcion, imagen, orden, activo } = req.body
     const item = await prisma.equipo.create({
-      data: { nombre, descripcion, icono, orden: orden ?? 0, activo: activo ?? true },
+      data: { nombre, descripcion, imagen: imagen || null, orden: orden ?? 0, activo: activo ?? true },
     })
     res.status(201).json(item)
   } catch (e) {
@@ -43,10 +43,10 @@ router.post('/', authMiddleware, async (req, res) => {
 // PUT /api/equipos/:id — admin
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const { nombre, descripcion, icono, orden, activo } = req.body
+    const { nombre, descripcion, imagen, orden, activo } = req.body
     const item = await prisma.equipo.update({
       where: { id: Number(req.params.id) },
-      data: { nombre, descripcion, icono, orden, activo },
+      data: { nombre, descripcion, imagen: imagen || null, orden, activo },
     })
     res.json(item)
   } catch (e) {
