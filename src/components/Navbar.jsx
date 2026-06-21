@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import brandLogo from '../assets/otropng.png'
 
 export default function Navbar({ variant = 'default' }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [servicesOpen, setServicesOpen] = useState(false)
+  const servicesRef = useRef(null)
   const location = useLocation()
 
   useEffect(() => {
@@ -13,9 +15,33 @@ export default function Navbar({ variant = 'default' }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => { setOpen(false) }, [location.pathname])
+  useEffect(() => {
+    setOpen(false)
+    setServicesOpen(false)
+  }, [location.pathname, location.search])
 
-  const isActive = (path) => location.pathname === path ? 'active' : ''
+  useEffect(() => {
+    const closeServices = event => {
+      if (event.key === 'Escape') {
+        setServicesOpen(false)
+        servicesRef.current?.querySelector('button')?.focus()
+        return
+      }
+
+      if (!servicesRef.current?.contains(event.target)) setServicesOpen(false)
+    }
+
+    document.addEventListener('click', closeServices)
+    document.addEventListener('keydown', closeServices)
+    return () => {
+      document.removeEventListener('click', closeServices)
+      document.removeEventListener('keydown', closeServices)
+    }
+  }, [])
+
+  const hasServiceQuery = location.pathname === '/contacto' && new URLSearchParams(location.search).has('servicio')
+  const isActive = path => location.pathname === path && !(path === '/contacto' && hasServiceQuery) ? 'active' : ''
+  const isServiceActive = ['/capacitaciones', '/equipos', '/surge'].includes(location.pathname) || hasServiceQuery
 
   const className = `navbar${variant === 'home' ? ' navbar--home' : ''}${scrolled ? ' scrolled' : ''}`
 
@@ -24,7 +50,9 @@ export default function Navbar({ variant = 'default' }) {
       <div className="container navbar__inner">
         <button
           className="navbar__toggle"
-          aria-label="Abrir menú"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={open}
+          aria-controls="main-navigation"
           onClick={() => setOpen(o => !o)}
         >
           <i className={`fas ${open ? 'fa-xmark' : 'fa-bars'}`} />
@@ -34,11 +62,33 @@ export default function Navbar({ variant = 'default' }) {
             <img className="navbar__brand-image" src={brandLogo} alt="Kadima Consultoría en Salud" />
           </Link>
         )}
-        <ul className={`navbar__links${open ? ' open' : ''}`}>
+        <ul id="main-navigation" className={`navbar__links${open ? ' open' : ''}`}>
           <li><Link to="/nosotros" className={isActive('/nosotros')}>Nosotros</Link></li>
-          <li><Link to="/capacitaciones" className={isActive('/capacitaciones')}>Capacitaciones</Link></li>
-          <li><Link to="/surge" className={isActive('/surge')}>SURGE</Link></li>
-          <li><Link to="/equipos" className={isActive('/equipos')}>Equipos</Link></li>
+          <li ref={servicesRef} className={`navbar__services${servicesOpen ? ' open' : ''}`}>
+            <button
+              type="button"
+              className={`navbar__services-toggle${isServiceActive ? ' active' : ''}`}
+              aria-expanded={servicesOpen}
+              aria-haspopup="true"
+              aria-controls="services-navigation"
+              onClick={event => {
+                event.stopPropagation()
+                setServicesOpen(value => !value)
+              }}
+            >
+              Servicios
+              <i className="fas fa-chevron-down" aria-hidden="true" />
+            </button>
+            <ul id="services-navigation" className="navbar__dropdown">
+              <li><Link to="/capacitaciones">Capacitaciones</Link></li>
+              <li><Link to="/equipos">Equipos Médicos</Link></li>
+              <li><Link to="/surge">Presentaciones SURGE</Link></li>
+              <li><Link to="/contacto?servicio=auditoria-de-liquidacion">Auditoría de Liquidación</Link></li>
+              <li><Link to="/contacto?servicio=internacion-domiciliaria">Internación Domiciliaria</Link></li>
+              <li><Link to="/contacto?servicio=control-de-pacientes-diabeticos">Control de Pacientes Diabéticos</Link></li>
+              <li><Link to="/contacto?servicio=asesoramiento-pre-judiciales">Asesoramiento Pre-Judiciales</Link></li>
+            </ul>
+          </li>
           <li><Link to="/blog" className={isActive('/blog')}>Blog</Link></li>
           <li><Link to="/contacto" className={isActive('/contacto')}>Contacto</Link></li>
           <li className="navbar__cta-mobile-item">
