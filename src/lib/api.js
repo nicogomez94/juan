@@ -21,6 +21,14 @@ async function request(path, options = {}) {
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers })
   const data = await res.json().catch(() => ({}))
+  // If unauthorized, clear stored token and redirect to admin login
+  if (res.status === 401) {
+    clearToken()
+    if (typeof window !== 'undefined') {
+      try { window.location.href = '/admin/login' } catch (e) {}
+    }
+    throw new Error(data.error || 'No autorizado')
+  }
 
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
   return data
