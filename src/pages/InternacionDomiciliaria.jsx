@@ -11,7 +11,6 @@ export default function InternacionDomiciliaria() {
         'Brindamos atención médica profesional, continua y personalizada en el domicilio del paciente, orientada a garantizar la continuidad asistencial con estándares clínicos equivalentes a los de una institución hospitalaria. Nuestro modelo integra atención médica, enfermería, terapias y suministro de insumos y equipamiento médico necesarios para una atención segura y eficaz.',
       ]}
       imageKey="services.internacion-domiciliaria.main"
-      imageCaption="Imagen administrable desde el panel"
       ctaTitle="Evaluemos las necesidades de su población"
       ctaText="Solicite una presentación técnica y comercial adaptada a su red de prestadores o financiador. Ofrecemos evaluación piloto y estimación de ahorro proyectado para su población objetivo."
     >

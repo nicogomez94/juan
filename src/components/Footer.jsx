@@ -39,8 +39,10 @@ export default function Footer() {
               <li><Link to="/capacitaciones">Capacitaciones</Link></li>
               <li><Link to="/surge">Presentaciones SURGE</Link></li>
               <li><Link to="/equipos">Equipos Médicos</Link></li>
-              <li><Link to="/blog">Blog</Link></li>
-              <li><Link to="/nosotros">Consultoría</Link></li>
+              <li><Link to="/servicios/auditoria-de-liquidacion">Auditoría de Liquidación</Link></li>
+              <li><Link to="/servicios/internacion-domiciliaria">Internación Domiciliaria</Link></li>
+              <li><Link to="/servicios/control-de-pacientes-diabeticos">Control de Pacientes Diabéticos</Link></li>
+              <li><Link to="/servicios/asesoramiento-pre-judiciales">Asesoramiento Pre-Judicial</Link></li>
             </ul>
           </div>
           <div className="footer__col">

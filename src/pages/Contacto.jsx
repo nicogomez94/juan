@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
@@ -11,13 +10,6 @@ import {
   normalizeFullName,
   sendContactForm,
 } from '../lib/contactForm'
-
-const SERVICE_NAMES = {
-  'auditoria-de-liquidacion': 'Auditoría de Liquidación',
-  'internacion-domiciliaria': 'Internación Domiciliaria',
-  'control-de-pacientes-diabeticos': 'Control de Pacientes Diabéticos',
-  'asesoramiento-pre-judiciales': 'Asesoramiento Pre-Judiciales',
-}
 
 function useFadeIn() {
   const ref = useRef(null)
@@ -35,7 +27,6 @@ function useFadeIn() {
 
 export default function Contacto() {
   const ref = useFadeIn()
-  const [searchParams] = useSearchParams()
   const [contact, setContact] = useState({
     email: 'contacto@kadimasalud.com.ar',
     whatsapp: '5491100000000',
@@ -45,9 +36,8 @@ export default function Contacto() {
     horario: 'Lunes a Viernes, 9:00 a 18:00',
   })
 
-  const selectedService = SERVICE_NAMES[searchParams.get('servicio')]
   const d = DEBUG ? debugDefaults.contactForm : {}
-  const [form, setForm] = useState({ nombre: d.nombre||'', apellido: d.apellido||'', email: d.email||'', celular: d.celular||'', consulta: d.consulta || (selectedService ? `Quisiera recibir información sobre ${selectedService}.` : '') })
+  const [form, setForm] = useState({ nombre: d.nombre||'', apellido: d.apellido||'', email: d.email||'', celular: d.celular||'', consulta: d.consulta||'' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -55,16 +45,6 @@ export default function Contacto() {
   useEffect(() => {
     api.get('/api/contact-info').then(r => { if (r.map) setContact(prev => ({ ...prev, ...r.map })) }).catch(() => {})
   }, [])
-
-  useEffect(() => {
-    if (!selectedService) return
-
-    setForm(current => {
-      const isAutomaticMessage = current.consulta.startsWith('Quisiera recibir información sobre ')
-      if (current.consulta && !isAutomaticMessage) return current
-      return { ...current, consulta: `Quisiera recibir información sobre ${selectedService}.` }
-    })
-  }, [selectedService])
 
   function handle(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))

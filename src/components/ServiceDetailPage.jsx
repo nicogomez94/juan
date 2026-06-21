@@ -59,7 +59,6 @@ export default function ServiceDetailPage({
   introTitle,
   intro,
   imageKey,
-  imageCaption,
   ctaTitle,
   ctaText,
   children,
@@ -88,7 +87,6 @@ export default function ServiceDetailPage({
           </div>
           <figure className="service-detail__image fade-in">
             <img src={serviceImage.url} alt={serviceImage.alt} />
-            <figcaption><i className="fas fa-image" aria-hidden="true" /> {imageCaption}</figcaption>
           </figure>
         </div>
       </section>

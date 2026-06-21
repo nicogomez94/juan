@@ -50,6 +50,38 @@ export const SITE_IMAGE_DEFAULTS = [
     alt: 'Equipo medico quirurgico',
     ratio: '4:3',
   },
+  {
+    key: 'services.auditoria-liquidacion.main',
+    label: 'Auditoría de Liquidación - imagen principal',
+    section: 'Servicios',
+    defaultUrl: '/service-auditoria.svg',
+    alt: 'Profesionales revisando documentación financiera y médica',
+    ratio: '4:3',
+  },
+  {
+    key: 'services.internacion-domiciliaria.main',
+    label: 'Internación Domiciliaria - imagen principal',
+    section: 'Servicios',
+    defaultUrl: '/service-internacion.svg',
+    alt: 'Profesional brindando atención médica personalizada',
+    ratio: '4:3',
+  },
+  {
+    key: 'services.control-diabetes.main',
+    label: 'Control de Pacientes Diabéticos - imagen principal',
+    section: 'Servicios',
+    defaultUrl: '/service-diabetes.svg',
+    alt: 'Seguimiento clínico y tecnología aplicada a la salud',
+    ratio: '4:3',
+  },
+  {
+    key: 'services.asesoramiento-prejudicial.main',
+    label: 'Asesoramiento Pre-Judicial - imagen principal',
+    section: 'Servicios',
+    defaultUrl: '/service-prejudicial.svg',
+    alt: 'Asesoramiento jurídico y sanitario preventivo',
+    ratio: '4:3',
+  },
 ]
 
 const DEFAULT_IMAGE_MAP = SITE_IMAGE_DEFAULTS.reduce((acc, image) => {

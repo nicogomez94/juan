@@ -12,7 +12,6 @@ export default function ControlDiabetes() {
         'A través de un enfoque centralizado, el servicio combina la atención médica de alta complejidad con herramientas de educación digital y automanejo.',
       ]}
       imageKey="services.control-diabetes.main"
-      imageCaption="Imagen administrable desde el panel"
       ctaTitle="Construyamos un programa integral de diabetes"
       ctaText="Conozca cómo adaptar el servicio a las necesidades clínicas y administrativas de su organización."
     >

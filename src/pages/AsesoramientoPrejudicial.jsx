@@ -11,7 +11,6 @@ export default function AsesoramientoPrejudicial() {
         'El principal motor de los amparos de salud no es siempre la negativa, sino la demora —mora administrativa—. Trabajamos sobre los procesos, la calidad de las decisiones y los canales de resolución para prevenir el conflicto judicial.',
       ]}
       imageKey="services.asesoramiento-prejudicial.main"
-      imageCaption="Imagen administrable desde el panel"
       ctaTitle="Prevenir el conflicto también es cuidar"
       ctaText="Analicemos los circuitos de autorización, auditoría y resolución de su organización para reducir riesgos y mejorar la experiencia del afiliado."
     >

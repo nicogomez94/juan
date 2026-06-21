@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Asesoramiento pre-judicial en salud</title>
+  <desc id="desc">Una balanza jurídica protegida por un escudo sanitario.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4f8fb"/><stop offset="1" stop-color="#d9eff0"/></linearGradient><linearGradient id="shield" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1b3a50"/><stop offset="1" stop-color="#0c7b80"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#0a1e2e" flood-opacity=".24"/></filter></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/><circle cx="90" cy="100" r="270" fill="#2ec9c5" opacity=".14"/><circle cx="1110" cy="820" r="320" fill="#1b3a50" opacity=".06"/>
+  <path d="M600 92c128 86 250 94 316 94v232c0 190-110 305-316 394-206-89-316-204-316-394V186c66 0 188-8 316-94z" fill="url(#shield)" filter="url(#s)"/>
+  <g fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M600 270v330M450 340h300M500 340l-92 180h184zm292 180-92-180-92 180zM462 628h276"/>
+    <path d="M548 460h104M600 408v104" stroke="#2ec9c5" stroke-width="30"/>
+  </g>
+  <g fill="#2ec9c5"><circle cx="600" cy="270" r="30"/><circle cx="408" cy="520" r="20"/><circle cx="792" cy="520" r="20"/></g>
+</svg>

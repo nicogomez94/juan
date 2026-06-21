@@ -11,7 +11,6 @@ export default function AuditoriaLiquidacion() {
         'Brindamos servicios profesionales de auditoría de liquidaciones de prestaciones médicas orientados a asegurar la integridad, exactitud y conformidad de los procesos de pago. Nuestro enfoque combina metodologías técnicas, experiencia normativa y análisis cuantitativo para identificar inconsistencias, riesgos de sobrepago y brechas de cumplimiento contractual. Entregamos reportes ejecutivos y operativos con evidencia verificable y recomendaciones estructuradas para la recuperación de montos y la mitigación de riesgos futuros.',
       ]}
       imageKey="services.auditoria-liquidacion.main"
-      imageCaption="Imagen administrable desde el panel"
       ctaTitle="Protegé la integridad de cada liquidación"
       ctaText="Solicite una propuesta técnica y comercial adaptada a su organización. Contacte a nuestro equipo para agendar una reunión de diagnóstico y recibir una muestra de análisis sin compromiso."
     >

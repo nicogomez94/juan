@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Internación domiciliaria</title>
+  <desc id="desc">Una casa protegida por un corazón y una cruz médica.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef8f8"/><stop offset="1" stop-color="#bfe9e8"/></linearGradient><linearGradient id="roof" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1b3a50"/><stop offset="1" stop-color="#0c7b80"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#12384b" flood-opacity=".22"/></filter></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/><circle cx="1050" cy="100" r="260" fill="#fff" opacity=".48"/><circle cx="130" cy="800" r="300" fill="#2ec9c5" opacity=".12"/>
+  <g filter="url(#s)" transform="translate(210 130)">
+    <path d="M75 360 390 78l315 282v350H75z" fill="#fff"/><path d="M20 370 390 38l370 332-72 80L390 182 92 450z" fill="url(#roof)"/>
+    <rect x="132" y="400" width="175" height="145" rx="18" fill="#d9f1f1"/><path d="M219 424v97M171 472h97" stroke="#0c7b80" stroke-width="24" stroke-linecap="round"/>
+    <rect x="490" y="462" width="128" height="248" rx="16" fill="#1b3a50"/><circle cx="588" cy="588" r="9" fill="#2ec9c5"/>
+    <path d="M390 330c-68-96-205 0 0 164 205-164 68-260 0-164z" fill="#2ec9c5"/>
+  </g>
+  <path d="M90 754h180l30-62 62 118 55-142 48 86h645" fill="none" stroke="#0c7b80" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".78"/>
+</svg>

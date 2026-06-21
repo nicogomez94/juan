@@ -7,6 +7,10 @@ import Equipos from './pages/Equipos'
 import Contacto from './pages/Contacto'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
+import AuditoriaLiquidacion from './pages/AuditoriaLiquidacion'
+import InternacionDomiciliaria from './pages/InternacionDomiciliaria'
+import ControlDiabetes from './pages/ControlDiabetes'
+import AsesoramientoPrejudicial from './pages/AsesoramientoPrejudicial'
 import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
 import AdminDashboard from './admin/AdminDashboard'
@@ -27,6 +31,10 @@ export default function App() {
         <Route path="/capacitaciones" element={<Capacitaciones />} />
         <Route path="/surge" element={<Surge />} />
         <Route path="/equipos" element={<Equipos />} />
+        <Route path="/servicios/auditoria-de-liquidacion" element={<AuditoriaLiquidacion />} />
+        <Route path="/servicios/internacion-domiciliaria" element={<InternacionDomiciliaria />} />
+        <Route path="/servicios/control-de-pacientes-diabeticos" element={<ControlDiabetes />} />
+        <Route path="/servicios/asesoramiento-pre-judiciales" element={<AsesoramientoPrejudicial />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />

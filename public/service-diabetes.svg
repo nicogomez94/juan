@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Control integral de diabetes</title>
+  <desc id="desc">Una gota, un medidor y una curva de control glucémico.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a1e2e"/><stop offset="1" stop-color="#164e63"/></linearGradient><linearGradient id="drop" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#41d6d1"/><stop offset="1" stop-color="#0c7b80"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity=".3"/></filter></defs>
+  <rect width="1200" height="900" fill="url(#bg)"/><path d="M0 680c220-110 340 110 560 0s340 110 640 0v220H0z" fill="#2ec9c5" opacity=".1"/>
+  <g transform="translate(145 120)">
+    <path d="M280 0C218 128 90 260 90 405c0 141 111 255 248 255s248-114 248-255C586 260 458 128 396 0c-29-59-87-59-116 0z" fill="url(#drop)" filter="url(#s)"/>
+    <path d="M210 420c25 80 102 125 184 105" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" opacity=".72"/>
+  </g>
+  <g transform="translate(665 190)" filter="url(#s)">
+    <rect width="370" height="490" rx="50" fill="#fff"/>
+    <rect x="58" y="70" width="254" height="180" rx="24" fill="#eaf7f7"/>
+    <text x="185" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="700" fill="#1b3a50">102</text>
+    <text x="185" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#0c7b80">mg/dL</text>
+    <path d="M65 348c48 0 48-76 96-76s48 116 96 116 48-88 96-88" fill="none" stroke="#2ec9c5" stroke-width="15" stroke-linecap="round"/>
+    <circle cx="185" cy="425" r="31" fill="#1b3a50"/><circle cx="185" cy="425" r="10" fill="#2ec9c5"/>
+  </g>
+</svg>
