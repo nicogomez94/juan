@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
@@ -23,6 +23,7 @@ function getTopics(value) {
 }
 
 export default function Cursos() {
+  const { search } = useLocation()
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [usingDemo, setUsingDemo] = useState(false)
@@ -32,10 +33,25 @@ export default function Cursos() {
 
   useEffect(() => {
     api.get('/api/capacitaciones')
-      .then(data => setCourses(data))
+      .then(data => {
+        if (Array.isArray(data)) setCourses(data)
+        else {
+          setCourses(demoCourses)
+          setUsingDemo(true)
+        }
+      })
       .catch(() => { setCourses(demoCourses); setUsingDemo(true) })
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    const courseId = new URLSearchParams(search).get('curso')
+    const course = courses.find(item => String(item.id) === courseId)
+    if (course) {
+      setSelected(course)
+      setStep('detail')
+    }
+  }, [courses, search])
 
   useEffect(() => {
     if (!selected) return undefined

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
+import { demoCourses } from '../lib/demoCourses'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 import {
   buildContactMessage,
@@ -12,7 +13,7 @@ import {
   sendContactForm,
 } from '../lib/contactForm'
 
-function useFadeIn() {
+function useFadeIn(dependencies = []) {
   const ref = useRef(null)
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,7 +24,7 @@ function useFadeIn() {
     if (!el) return
     el.querySelectorAll('.fade-in').forEach(t => observer.observe(t))
     return () => el.querySelectorAll('.fade-in').forEach(t => observer.unobserve(t))
-  }, [])
+  }, dependencies)
   return ref
 }
 
@@ -92,71 +93,114 @@ function ContactForm() {
 }
 
 export default function Home() {
-  const ref = useFadeIn()
   const [contact, setContact] = useState({ email: 'contacto@kadimasalud.com.ar', whatsapp: '5491100000000', instagram: 'KadimaSalud' })
+  const [featuredCourses, setFeaturedCourses] = useState(demoCourses.slice(0, 3))
+  const [usingDemoCourses, setUsingDemoCourses] = useState(true)
+  const ref = useFadeIn([featuredCourses])
 
   useEffect(() => {
     api.get('/api/contact-info').then(d => { if (d.map) setContact(prev => ({ ...prev, ...d.map })) }).catch(() => {})
+    api.get('/api/capacitaciones').then(courses => {
+      if (Array.isArray(courses) && courses.length) {
+        setFeaturedCourses(courses.slice(0, 3))
+        setUsingDemoCourses(false)
+      }
+    }).catch(() => {})
   }, [])
 
   return (
     <div ref={ref}>
       <Navbar />
 
-      <section className="home-intro">
-        <div className="container home-intro__inner">
-          <div>
-            <p className="section-header__tag">Kadima Salud</p>
-            <h1>Consultoría y gestión para el sector salud</h1>
-            <p>Acompañamos a obras sociales, empresas de medicina prepaga e instituciones con soluciones profesionales para mejorar su gestión.</p>
-            <div className="home-intro__actions">
-              <Link to="/nosotros" className="btn btn--primary">Conocé Kadima</Link>
-              <Link to="/contacto" className="btn btn--outline">Hablemos de tu institución</Link>
+      <section className="home-hero" aria-labelledby="home-hero-title">
+        <div className="container home-hero__inner">
+          <div className="home-hero__copy">
+            <p className="home-hero__eyebrow">
+              <span /> Kadima Salud · Consultoría integral
+            </p>
+            <h1 id="home-hero-title">
+              Soluciones <span>en salud.</span>
+            </h1>
+            <p className="home-hero__lead">Acompañamos a obras sociales, prepagas e instituciones médicas con gestión, asesoramiento y formación especializados.</p>
+            <div className="home-hero__actions">
+              <a href="#servicios-destacados" className="btn btn--primary">
+                Explorar servicios <i className="fas fa-arrow-right" aria-hidden="true" />
+              </a>
+              <Link to="/cursos" className="btn btn--outline">Ver cursos</Link>
             </div>
+            <p className="home-hero__caption">Gestión · Formación · Acompañamiento</p>
           </div>
-          <div className="home-intro__side">
-            <i className="fas fa-shield-heart" aria-hidden="true" />
-            <span>Experiencia, conocimiento y compromiso al servicio de las organizaciones de salud.</span>
+          <div className="home-hero__portrait" aria-hidden="true">
+            <div className="home-hero__portrait-halo" />
+            <img src="/kadima-hero-person.png" alt="" loading="eager" />
           </div>
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="stats-strip">
-        <div className="container stats-strip__grid">
-          {[{n:'+15',l:'Años de experiencia'},{n:'+200',l:'Instituciones asesoradas'},{n:'+1.000',l:'Profesionales capacitados'},{n:'100%',l:'Compromiso con resultados'}].map(s => (
-            <div key={s.n} className="stats-strip__item fade-in">
-              <span className="stats-strip__number">{s.n}</span>
-              <span className="stats-strip__label">{s.l}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* SERVICIOS */}
-      <section className="servicios">
+      <section className="home-featured-services" id="servicios-destacados">
         <div className="container">
-          <div className="section-header section-header--light fade-in">
-            <p className="section-header__tag">Nuestros Servicios</p>
-            <h2>Soluciones integrales para el sector salud</h2>
-            <p className="section-header__desc">Trabajamos con obras sociales, empresas de medicina prepaga, gerenciadoras e instituciones médicas para optimizar su gestión y resultados.</p>
+          <div className="home-section-heading fade-in">
+            <div>
+              <p className="section-header__tag">Lo que hacemos</p>
+              <h2>Servicios destacados</h2>
+            </div>
+            <p>Soluciones concretas para la gestión de organizaciones de salud, con mirada técnica y atención cercana.</p>
           </div>
-          <div className="servicios__grid">
+          <div className="home-featured-services__grid">
             {[
-              { to: '/cursos', icon: 'fa-graduation-cap', title: 'Capacitaciones en Salud', desc: 'Formación especializada para profesionales del sector con certificación incluida, en modalidad presencial o virtual.', cta: 'Ver cursos' },
-              { to: '/surge', icon: 'fa-file-invoice-dollar', title: 'Presentaciones SURGE', desc: 'Recupero de costos ante la Superintendencia de Servicios de Salud. Gestión completa y seguimiento de expedientes.', cta: 'Ver servicio' },
-              { to: '/equipos', icon: 'fa-stethoscope', title: 'Equipos Médicos', desc: 'Profesionales y equipos de cirugía organizados por especialidad para cubrir necesidades de cada institución.', cta: 'Ver especialidades' },
-              { to: '/nosotros', icon: 'fa-chart-line', title: 'Consultoría Estratégica', desc: 'Asesoramiento integral en administración de salud para optimizar procesos, costos y calidad de prestaciones.', cta: 'Conocer más' },
-              { to: '/nosotros', icon: 'fa-building-shield', title: 'Gestión de Obras Sociales', desc: 'Acompañamiento en la administración eficiente de prestaciones y relación con financiadores del sistema.', cta: 'Conocer más' },
-              { to: '/contacto', icon: 'fa-handshake', title: 'Alianzas Comerciales', desc: 'Articulación entre instituciones, prepagas y financiadores para construir relaciones de valor en salud.', cta: 'Consultar' },
+              { to: '/servicios/auditoria-de-liquidacion', icon: 'fa-file-medical', title: 'Auditoría de liquidación', desc: 'Revisión de prestaciones y procesos de facturación para dar claridad a cada etapa de la gestión.' },
+              { to: '/surge', icon: 'fa-file-invoice-dollar', title: 'Presentaciones SURGE', desc: 'Gestión y seguimiento de expedientes de recupero de costos ante la Superintendencia de Servicios de Salud.' },
+              { to: '/servicios/internacion-domiciliaria', icon: 'fa-house-medical', title: 'Internación domiciliaria', desc: 'Coordinación de atención en domicilio con seguimiento profesional y foco en la continuidad del cuidado.' },
             ].map(s => (
-              <Link key={s.title} to={s.to} className="servicios__card servicios__card--link fade-in">
-                <div className="servicios__card-icon"><i className={`fas ${s.icon}`} /></div>
+              <Link key={s.title} to={s.to} className="home-service-card fade-in">
+                <div className="home-service-card__top">
+                  <span className="home-service-card__icon">
+                    <i className={`fas ${s.icon}`} aria-hidden="true" />
+                  </span>
+                </div>
                 <h3>{s.title}</h3>
                 <p>{s.desc}</p>
-                <span className="servicios__card-cta">{s.cta} <i className="fas fa-arrow-right" /></span>
+                <span className="home-service-card__link">
+                  Conocer servicio <i className="fas fa-arrow-right" aria-hidden="true" />
+                </span>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="home-featured-courses" id="cursos-destacados">
+        <div className="container">
+          <div className="home-section-heading fade-in">
+            <div>
+              <p className="section-header__tag">Formación para el sector</p>
+              <h2>Cursos destacados</h2>
+            </div>
+            <p>Propuestas prácticas para profesionales y equipos que buscan ampliar herramientas de gestión en salud.</p>
+          </div>
+          <div className="home-featured-courses__grid">
+            {featuredCourses.map(course => (
+              <Link to={`/cursos?curso=${encodeURIComponent(course.id)}`} key={course.id} className="home-course-card fade-in">
+                <div className="home-course-card__top">
+                  <span className="home-course-card__icon">
+                    <i className={`fas ${course.icono || 'fa-book-open'}`} aria-hidden="true" />
+                  </span>
+                  <span className="home-course-card__badge">{course.badge || 'Formación'}</span>
+                </div>
+                <h3>{course.titulo}</h3>
+                <p>{course.descripcion}</p>
+                <div className="home-course-card__bottom">
+                  <span><i className="far fa-clock" aria-hidden="true" /> {course.duracion || 'Duración a confirmar'}</span>
+                  <strong>Ver curso <i className="fas fa-arrow-right" aria-hidden="true" /></strong>
+                </div>
+              </Link>
+            ))}
+          </div>
+          {usingDemoCourses && <p className="home-featured-courses__note">Oferta de muestra para esta vista previa.</p>}
+          <div className="home-featured-courses__more fade-in">
+            <Link to="/cursos" className="btn btn--outline">
+              Explorar todos los cursos <i className="fas fa-arrow-right" aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>
