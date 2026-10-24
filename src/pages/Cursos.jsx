@@ -4,15 +4,12 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { api } from '../lib/api'
+import { demoCourses, demoPriceFor } from '../lib/demoCourses'
 
-const samplePrices = {
-  'Administración de Obras Sociales': 48000,
-  'SURGE y Recupero de Costos': 32000,
-  'Gestión de Prestaciones Médicas': 42000,
-  'Planificación en Salud': 56000,
+function formatPrice(title) {
+  const price = demoPriceFor(title)
+  return price == null ? 'Valor a confirmar' : `$ ${price.toLocaleString('es-AR')}`
 }
-
-const formatPrice = title => samplePrices[title] == null ? 'Valor a confirmar' : `$ ${samplePrices[title].toLocaleString('es-AR')}`
 
 function getTopics(value) {
   if (Array.isArray(value)) return value
@@ -28,6 +25,7 @@ function getTopics(value) {
 export default function Cursos() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
+  const [usingDemo, setUsingDemo] = useState(false)
   const [selected, setSelected] = useState(null)
   const [step, setStep] = useState('detail')
   const closeButtonRef = useRef(null)
@@ -35,7 +33,7 @@ export default function Cursos() {
   useEffect(() => {
     api.get('/api/capacitaciones')
       .then(data => setCourses(data))
-      .catch(() => setCourses([]))
+      .catch(() => { setCourses(demoCourses); setUsingDemo(true) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -77,7 +75,7 @@ export default function Cursos() {
                 <h2>Elegí tu próximo curso</h2>
                 <p>Explorá el programa, la modalidad y el valor de referencia de cada propuesta.</p>
               </div>
-              <div className="course-section__notice"><i className="fas fa-circle-info" /> Vista previa: los valores son de muestra y el pago en línea está en preparación.</div>
+              <div className="course-section__notice"><i className="fas fa-circle-info" /> Vista previa: {usingDemo ? 'el catálogo y los valores son de muestra' : 'los valores son de muestra'} y el pago en línea está en preparación.</div>
             </div>
 
             {loading ? (

@@ -841,6 +841,13 @@
   font-weight: 700;
 }
 
+.admin-section-header .btn:disabled,
+.admin-btn-icon:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
 @media (max-width: 760px) {
   .admin-preview-grid {
     grid-template-columns: 1fr;

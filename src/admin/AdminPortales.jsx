@@ -33,7 +33,7 @@ export default function AdminPortales({ type }) {
           <tbody>{isStudent ? studentCourses.map(course => <tr key={course.title}><td><strong>{course.title}</strong></td><td>{course.next}</td><td>{course.progress}%</td><td><span className="admin-table__badge admin-table__badge--teal">{course.status}</span></td></tr>) : clinicalRecords.map(record => <tr key={record.code}><td><strong>{record.code}</strong></td><td>{record.person}</td><td>{record.area}</td><td>{record.updated}</td><td><span className="admin-table__badge admin-table__badge--teal">{record.state}</span></td></tr>)}</tbody>
         </table>
       </div>
-      {isStudent && <p className="admin-preview-help">Los cursos reales se editan en <Link to="/admin/capacitaciones">Capacitaciones</Link> y se publican en <Link to="/cursos" target="_blank" rel="noopener noreferrer">Cursos</Link>.</p>}
+      {isStudent && <p className="admin-preview-help">El catálogo se gestiona en <Link to="/admin/capacitaciones">Capacitaciones</Link> y aparece en <Link to="/cursos" target="_blank" rel="noopener noreferrer">Cursos</Link> cuando la base de datos está configurada.</p>}
     </div>
   )
 }

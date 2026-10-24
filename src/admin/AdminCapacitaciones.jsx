@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { useToast } from './ToastContext'
+import { demoCourses } from '../lib/demoCourses'
 
 const EMPTY = { titulo: '', duracion: '', badge: '', badgeColor: 'navy', descripcion: '', temas: '', icono: 'fa-book', publico: '', modalidad: 'Virtual', activo: true }
 
@@ -8,6 +9,7 @@ export default function AdminCapacitaciones() {
   const toast = useToast()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isDemo, setIsDemo] = useState(false)
   const [modal, setModal] = useState(null) // null | 'create' | {item}
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
@@ -15,7 +17,9 @@ export default function AdminCapacitaciones() {
 
   function load() {
     setLoading(true)
-    api.get('/api/capacitaciones/all').then(d => { setItems(d); setLoading(false) }).catch(() => setLoading(false))
+    api.get('/api/capacitaciones/all')
+      .then(d => { setItems(d); setIsDemo(false); setLoading(false) })
+      .catch(() => { setItems(demoCourses); setIsDemo(true); setLoading(false) })
   }
   useEffect(load, [])
 
@@ -81,14 +85,14 @@ export default function AdminCapacitaciones() {
     <div>
       <div className="admin-section-header">
         <h2>Capacitaciones</h2>
-        <button className="btn btn--primary" onClick={openCreate}><i className="fas fa-plus" /> Nueva capacitación</button>
+        <button className="btn btn--primary" onClick={openCreate} disabled={isDemo}><i className="fas fa-plus" /> Nueva capacitación</button>
       </div>
 
       <div className="admin-preview-banner">
         <i className="fas fa-circle-info" />
         <div>
-          <strong>Catálogo conectado con Cursos</strong>
-          <p>Las capacitaciones activas aparecen en la <a href="/cursos" target="_blank" rel="noopener noreferrer">página de cursos</a>. Los valores de esa vista son ilustrativos hasta integrar el sistema de pagos.</p>
+          <strong>{isDemo ? 'Catálogo de demostración' : 'Catálogo conectado con Cursos'}</strong>
+          <p>{isDemo ? 'Esta instancia no tiene base de datos configurada. Se muestran cursos ficticios para revisar la sección; la edición se habilitará al conectar la base de datos.' : 'Las capacitaciones activas aparecen en la página de cursos. Los valores de esa vista son ilustrativos hasta integrar el sistema de pagos.'} <a href="/cursos" target="_blank" rel="noopener noreferrer">Ver Cursos</a>.</p>
         </div>
       </div>
 
@@ -130,13 +134,13 @@ export default function AdminCapacitaciones() {
                 </td>
                 <td>
                   <div className="admin-table__actions">
-                    <button className="admin-btn-icon admin-btn-icon--toggle" title={item.activo ? 'Desactivar' : 'Activar'} onClick={() => toggleActivo(item)}>
+                    <button className="admin-btn-icon admin-btn-icon--toggle" title={item.activo ? 'Desactivar' : 'Activar'} disabled={isDemo} onClick={() => toggleActivo(item)}>
                       <i className={`fas ${item.activo ? 'fa-eye-slash' : 'fa-eye'}`} />
                     </button>
-                    <button className="admin-btn-icon admin-btn-icon--edit" title="Editar" onClick={() => openEdit(item)}>
+                    <button className="admin-btn-icon admin-btn-icon--edit" title="Editar" disabled={isDemo} onClick={() => openEdit(item)}>
                       <i className="fas fa-pen" />
                     </button>
-                    <button className="admin-btn-icon admin-btn-icon--delete" title="Eliminar" onClick={() => remove(item.id)}>
+                    <button className="admin-btn-icon admin-btn-icon--delete" title="Eliminar" disabled={isDemo} onClick={() => remove(item.id)}>
                       <i className="fas fa-trash" />
                     </button>
                   </div>

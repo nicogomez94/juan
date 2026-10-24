@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
+import { demoCourses } from '../lib/demoCourses'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
@@ -8,18 +9,18 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get('/api/capacitaciones/all').then(d => d.length).catch(() => 0),
+      api.get('/api/capacitaciones/all').then(d => ({ count: d.length, demo: false })).catch(() => ({ count: demoCourses.length, demo: true })),
       api.get('/api/equipos/all').then(d => d.length).catch(() => 0),
       api.get('/api/blog/all').then(d => ({ total: d.length, pub: d.filter(p => p.publicado).length, draft: d.filter(p => !p.publicado).length })).catch(() => ({ total: 0, pub: 0, draft: 0 })),
       api.get('/api/site-images/all').then(d => d.filter(image => image.customUrl).length).catch(() => 0),
     ]).then(([caps, equips, blog, customImages]) => {
-      setStats({ caps, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft, customImages })
+      setStats({ caps: caps.count, capsDemo: caps.demo, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft, customImages })
       setLoading(false)
     })
   }, [])
 
   const cards = loading ? [] : [
-    { label: 'Capacitaciones', value: stats.caps, icon: 'fa-graduation-cap', color: 'teal', to: '/admin/capacitaciones' },
+    { label: stats.capsDemo ? 'Cursos de muestra' : 'Capacitaciones', value: stats.caps, icon: 'fa-graduation-cap', color: 'teal', to: '/admin/capacitaciones' },
     { label: 'Estudiantes de muestra', value: 1, icon: 'fa-user-graduate', color: 'navy', to: '/admin/portal-estudiantes' },
     { label: 'Historias de muestra', value: 3, icon: 'fa-file-medical', color: 'teal', to: '/admin/historias-clinicas' },
     { label: 'Equipos médicos', value: stats.equips, icon: 'fa-stethoscope', color: 'navy', to: '/admin/equipos' },
