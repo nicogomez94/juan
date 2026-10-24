@@ -13,7 +13,7 @@ export default function AdminPortales({ type }) {
         <Link className="btn btn--primary" to={path} target="_blank" rel="noopener noreferrer"><i className="fas fa-arrow-up-right-from-square" /> Ver portal</Link>
       </div>
 
-      <div className="admin-preview-banner"><i className="fas fa-circle-info" /><div><strong>Contenido de demostración</strong><p>Los registros de esta pantalla son ficticios. El alta de usuarios, los permisos y la gestión de historias clínicas se incorporarán después de aprobar el diseño.</p></div></div>
+      <div className="admin-preview-banner"><i className="fas fa-circle-info" /><div><strong>Contenido de demostración</strong><p>{isStudent ? 'Los registros de esta pantalla son ficticios. El registro, el inicio de sesión y el seguimiento real de cursos se incorporarán después de aprobar el diseño.' : 'Los registros de esta pantalla son ficticios. El acceso privado, los permisos y la carga de historias clínicas se incorporarán después de aprobar el diseño.'}</p></div></div>
 
       <div className="admin-preview-grid">
         {(isStudent ? [
