@@ -113,6 +113,8 @@ export default function Home() {
       <Navbar />
 
       <section className="home-hero" aria-labelledby="home-hero-title">
+        <div className="home-hero__orbit home-hero__orbit--one" aria-hidden="true" />
+        <div className="home-hero__orbit home-hero__orbit--two" aria-hidden="true" />
         <div className="container home-hero__inner">
           <div className="home-hero__copy">
             <p className="home-hero__eyebrow">
@@ -132,8 +134,25 @@ export default function Home() {
           </div>
           <div className="home-hero__portrait" aria-hidden="true">
             <div className="home-hero__portrait-halo" />
+            <div className="home-hero__portrait-dots" />
             <img src="/kadima-hero-person.png" alt="" loading="eager" />
+            <span className="home-hero__floating-note home-hero__floating-note--top">
+              <i className="fas fa-heart-pulse" /> Gestión en salud
+            </span>
+            <span className="home-hero__floating-note home-hero__floating-note--bottom">
+              <i className="fas fa-graduation-cap" /> Formación aplicada
+            </span>
           </div>
+        </div>
+      </section>
+
+      <section className="home-sector-strip" aria-label="Sectores que acompañamos">
+        <div className="container home-sector-strip__inner">
+          <p>Acompañamos a</p>
+          <div><i className="fas fa-building-shield" aria-hidden="true" /> Obras sociales</div>
+          <div><i className="fas fa-hospital" aria-hidden="true" /> Medicina prepaga</div>
+          <div><i className="fas fa-stethoscope" aria-hidden="true" /> Instituciones médicas</div>
+          <div><i className="fas fa-user-doctor" aria-hidden="true" /> Equipos de salud</div>
         </div>
       </section>
 
@@ -164,6 +183,32 @@ export default function Home() {
                   Conocer servicio <i className="fas fa-arrow-right" aria-hidden="true" />
                 </span>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="home-method" aria-labelledby="home-method-title">
+        <div className="home-method__decor" aria-hidden="true" />
+        <div className="container home-method__inner">
+          <div className="home-method__intro fade-in">
+            <p className="section-header__tag">Nuestra forma de trabajar</p>
+            <h2 id="home-method-title">Del desafío a una respuesta concreta.</h2>
+            <p>Cada organización tiene su propia realidad. Escuchamos, analizamos y acompañamos con soluciones adaptadas a sus procesos y objetivos.</p>
+            <Link to="/nosotros" className="home-method__link">
+              Conocé a Kadima <i className="fas fa-arrow-right" aria-hidden="true" />
+            </Link>
+          </div>
+          <div className="home-method__steps">
+            {[
+              { icon: 'fa-magnifying-glass-chart', title: 'Analizamos', text: 'Entendemos el contexto, los circuitos y las necesidades de cada institución.' },
+              { icon: 'fa-diagram-project', title: 'Diseñamos', text: 'Definimos una propuesta de trabajo clara, enfocada en los puntos de mayor impacto.' },
+              { icon: 'fa-handshake-angle', title: 'Acompañamos', text: 'Trabajamos junto al equipo para llevar las soluciones a la práctica.' },
+            ].map(step => (
+              <div className="home-method__step fade-in" key={step.title}>
+                <span><i className={`fas ${step.icon}`} aria-hidden="true" /></span>
+                <div><h3>{step.title}</h3><p>{step.text}</p></div>
+              </div>
             ))}
           </div>
         </div>
@@ -200,6 +245,34 @@ export default function Home() {
           <div className="home-featured-courses__more fade-in">
             <Link to="/cursos" className="btn btn--outline">
               Explorar todos los cursos <i className="fas fa-arrow-right" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="home-portals" aria-labelledby="home-portals-title">
+        <div className="container">
+          <div className="home-section-heading fade-in">
+            <div>
+              <p className="section-header__tag">Espacios digitales</p>
+              <h2 id="home-portals-title">Herramientas para estar conectados</h2>
+            </div>
+            <p>Conocé los espacios que estamos preparando para estudiantes y para la gestión de historias clínicas.</p>
+          </div>
+          <div className="home-portals__grid">
+            <Link to="/portal-estudiantes" className="home-portal-card home-portal-card--students fade-in">
+              <span className="home-portal-card__status">Vista previa</span>
+              <span className="home-portal-card__icon"><i className="fas fa-graduation-cap" aria-hidden="true" /></span>
+              <h3>Portal de estudiantes</h3>
+              <p>Un espacio para reunir cursos, avances y certificados en una misma experiencia de formación.</p>
+              <span className="home-portal-card__link">Explorar portal <i className="fas fa-arrow-right" aria-hidden="true" /></span>
+            </Link>
+            <Link to="/portal-historias-clinicas" className="home-portal-card home-portal-card--clinical fade-in">
+              <span className="home-portal-card__status">Vista previa</span>
+              <span className="home-portal-card__icon"><i className="fas fa-file-medical" aria-hidden="true" /></span>
+              <h3>Historias clínicas</h3>
+              <p>Una vista del futuro entorno privado para organizar y consultar documentación clínica.</p>
+              <span className="home-portal-card__link">Explorar portal <i className="fas fa-arrow-right" aria-hidden="true" /></span>
             </Link>
           </div>
         </div>
