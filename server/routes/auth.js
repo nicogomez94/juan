@@ -1,13 +1,17 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('../middleware/auth')
+const { JWT_SECRET, adminConfigured } = require('../middleware/auth')
 
 // POST /api/auth/login
 router.post('/login', (req, res) => {
   const { username, password } = req.body
   const ADMIN_USER = process.env.ADMIN_USER || 'admin'
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin'
+
+  if (!adminConfigured) {
+    return res.status(503).json({ error: 'El panel de administración no está configurado en esta instancia.' })
+  }
 
   if (username !== ADMIN_USER || password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Credenciales incorrectas' })
