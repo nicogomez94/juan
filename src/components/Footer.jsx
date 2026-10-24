@@ -37,12 +37,20 @@ export default function Footer() {
             <h4>Servicios</h4>
             <ul>
               <li><Link to="/capacitaciones">Capacitaciones</Link></li>
+              <li><Link to="/cursos">Cursos</Link></li>
               <li><Link to="/surge">Presentaciones SURGE</Link></li>
               <li><Link to="/equipos">Equipos Médicos</Link></li>
               <li><Link to="/servicios/auditoria-de-liquidacion">Auditoría de Liquidación</Link></li>
               <li><Link to="/servicios/internacion-domiciliaria">Internación Domiciliaria</Link></li>
               <li><Link to="/servicios/control-de-pacientes-diabeticos">Control de Pacientes Diabéticos</Link></li>
               <li><Link to="/servicios/asesoramiento-pre-judiciales">Asesoramiento Pre-Judicial</Link></li>
+            </ul>
+          </div>
+          <div className="footer__col">
+            <h4>Portales</h4>
+            <ul>
+              <li><Link to="/portal-estudiantes">Estudiantes</Link></li>
+              <li><Link to="/portal-historias-clinicas">Historias clínicas</Link></li>
             </ul>
           </div>
           <div className="footer__col">
@@ -58,8 +66,8 @@ export default function Footer() {
       <div className="footer__bottom">
         <div className="container footer__bottom-inner">
           <p>&copy; {new Date().getFullYear()} Kadima Salud. Todos los derechos reservados.</p>
-          <p>Hecho por <a href="https://zigodev.com.ar" target="_blank" rel="noopener noreferrer">zigodev</a></p>
         </div>
+        <p className="footer__credit">Hecho por <a href="https://zigodev.com.ar" target="_blank" rel="noopener noreferrer">zigodev</a></p>
       </div>
     </footer>
   )

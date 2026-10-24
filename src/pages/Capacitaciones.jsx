@@ -95,7 +95,7 @@ export default function Capacitaciones() {
                     <li><i className="fas fa-certificate" /> Con certificación</li>
                     <li><i className="fas fa-laptop" /> {c.modalidad}</li>
                   </ul>
-                  <Link to="/contacto" className="btn btn--outline">Consultar cupo</Link>
+                  <Link to="/cursos" className="btn btn--outline">Ver cursos</Link>
                 </div>
               ))}
             </div>

@@ -762,3 +762,87 @@
   color: var(--color-primary);
   margin-bottom: 0.25rem;
 }
+.admin-preview-subtitle {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
+.admin-preview-banner {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  background: #e8f1f3;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.admin-preview-banner > i {
+  color: var(--color-secondary);
+  margin-top: 0.2rem;
+}
+
+.admin-preview-banner strong {
+  font-size: 0.9rem;
+}
+
+.admin-preview-banner p {
+  color: var(--color-text-light);
+  font-size: 0.82rem;
+}
+
+.admin-preview-banner a {
+  color: var(--color-secondary);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.admin-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-preview-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.admin-preview-stat i {
+  color: var(--color-secondary);
+}
+
+.admin-preview-stat strong {
+  color: var(--color-primary);
+  font-size: 1.25rem;
+}
+
+.admin-preview-stat span {
+  color: var(--color-text-light);
+  font-size: 0.78rem;
+}
+
+.admin-preview-help {
+  color: var(--color-text-light);
+  font-size: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.admin-preview-help a {
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .admin-preview-grid {
+    grid-template-columns: 1fr;
+  }
+}

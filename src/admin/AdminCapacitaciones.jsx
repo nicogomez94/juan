@@ -84,6 +84,14 @@ export default function AdminCapacitaciones() {
         <button className="btn btn--primary" onClick={openCreate}><i className="fas fa-plus" /> Nueva capacitación</button>
       </div>
 
+      <div className="admin-preview-banner">
+        <i className="fas fa-circle-info" />
+        <div>
+          <strong>Catálogo conectado con Cursos</strong>
+          <p>Las capacitaciones activas aparecen en la <a href="/cursos" target="_blank" rel="noopener noreferrer">página de cursos</a>. Los valores de esa vista son ilustrativos hasta integrar el sistema de pagos.</p>
+        </div>
+      </div>
+
       {alert && (
         <div className={`admin-alert admin-alert--${alert.type}`} style={{ marginBottom: '1rem' }}>
           <i className={`fas fa-${alert.type === 'success' ? 'circle-check' : 'circle-exclamation'}`} />

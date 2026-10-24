@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import horizontalBanner from '../../horizontal.svg'
-import verticalBanner from '../../vertical.svg'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [portalsOpen, setPortalsOpen] = useState(false)
   const servicesRef = useRef(null)
+  const portalsRef = useRef(null)
   const location = useLocation()
 
   useEffect(() => {
@@ -19,17 +19,19 @@ export default function Navbar() {
   useEffect(() => {
     setOpen(false)
     setServicesOpen(false)
+    setPortalsOpen(false)
   }, [location.pathname, location.search])
 
   useEffect(() => {
     const closeServices = event => {
       if (event.key === 'Escape') {
         setServicesOpen(false)
-        servicesRef.current?.querySelector('button')?.focus()
+        setPortalsOpen(false)
         return
       }
 
       if (!servicesRef.current?.contains(event.target)) setServicesOpen(false)
+      if (!portalsRef.current?.contains(event.target)) setPortalsOpen(false)
     }
 
     document.addEventListener('click', closeServices)
@@ -42,19 +44,18 @@ export default function Navbar() {
 
   const isActive = path => location.pathname === path ? 'active' : ''
   const isServiceActive = ['/capacitaciones', '/equipos', '/surge'].includes(location.pathname) || location.pathname.startsWith('/servicios/')
+  const isPortalActive = ['/portal-estudiantes', '/portal-historias-clinicas'].includes(location.pathname)
 
   const className = `navbar navbar--home${scrolled ? ' scrolled' : ''}`
 
   return (
     <header className="site-header">
-      <div className="home-start__banner">
-        <picture>
-          <source media="(min-width: 721px)" srcSet={horizontalBanner} />
-          <img src={verticalBanner} alt="Kadima Consultoría en Salud" />
-        </picture>
-      </div>
       <nav className={className} id="navbar">
         <div className="container navbar__inner">
+          <Link to="/" className="navbar__logo" aria-label="Kadima Salud, ir al inicio">
+            <i className="fas fa-shield-heart" aria-hidden="true" />
+            <span>Kadima <strong>Salud</strong></span>
+          </Link>
           <button
             className="navbar__toggle"
             aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
@@ -64,10 +65,6 @@ export default function Navbar() {
           >
             <i className={`fas ${open ? 'fa-xmark' : 'fa-bars'}`} />
           </button>
-          <Link to="/" className="navbar__home-link" aria-label="Ir al inicio">
-            <i className="fas fa-house" aria-hidden="true" />
-            <span>Inicio</span>
-          </Link>
           <ul id="main-navigation" className={`navbar__links${open ? ' open' : ''}`}>
             <li><Link to="/nosotros" className={isActive('/nosotros')}>Nosotros</Link></li>
             <li ref={servicesRef} className={`navbar__services${servicesOpen ? ' open' : ''}`}>
@@ -93,6 +90,25 @@ export default function Navbar() {
                 <li><Link to="/servicios/internacion-domiciliaria">Internación Domiciliaria</Link></li>
                 <li><Link to="/servicios/control-de-pacientes-diabeticos">Control de Pacientes Diabéticos</Link></li>
                 <li><Link to="/servicios/asesoramiento-pre-judiciales">Asesoramiento Pre-Judiciales</Link></li>
+              </ul>
+            </li>
+            <li><Link to="/cursos" className={isActive('/cursos')}>Cursos</Link></li>
+            <li ref={portalsRef} className={`navbar__services${portalsOpen ? ' open' : ''}`}>
+              <button
+                type="button"
+                className={`navbar__services-toggle${isPortalActive ? ' active' : ''}`}
+                aria-expanded={portalsOpen}
+                aria-controls="portals-navigation"
+                onClick={event => {
+                  event.stopPropagation()
+                  setPortalsOpen(value => !value)
+                }}
+              >
+                Portales <i className="fas fa-chevron-down" aria-hidden="true" />
+              </button>
+              <ul id="portals-navigation" className="navbar__dropdown">
+                <li><Link to="/portal-estudiantes">Estudiantes</Link></li>
+                <li><Link to="/portal-historias-clinicas">Historias clínicas</Link></li>
               </ul>
             </li>
             <li><Link to="/blog" className={isActive('/blog')}>Blog</Link></li>

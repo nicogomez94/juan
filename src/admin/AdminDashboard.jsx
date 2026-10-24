@@ -20,6 +20,8 @@ export default function AdminDashboard() {
 
   const cards = loading ? [] : [
     { label: 'Capacitaciones', value: stats.caps, icon: 'fa-graduation-cap', color: 'teal', to: '/admin/capacitaciones' },
+    { label: 'Estudiantes de muestra', value: 1, icon: 'fa-user-graduate', color: 'navy', to: '/admin/portal-estudiantes' },
+    { label: 'Historias de muestra', value: 3, icon: 'fa-file-medical', color: 'teal', to: '/admin/historias-clinicas' },
     { label: 'Equipos médicos', value: stats.equips, icon: 'fa-stethoscope', color: 'navy', to: '/admin/equipos' },
     { label: 'Posts publicados', value: stats.blogPub, icon: 'fa-circle-check', color: 'accent', to: '/admin/blog' },
     { label: 'Borradores', value: stats.blogDraft, icon: 'fa-file-pen', color: 'orange', to: '/admin/blog' },
@@ -62,6 +64,8 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
           {[
             { to: '/admin/capacitaciones', icon: 'fa-graduation-cap', label: 'Capacitaciones' },
+            { to: '/admin/portal-estudiantes', icon: 'fa-user-graduate', label: 'Portal de estudiantes' },
+            { to: '/admin/historias-clinicas', icon: 'fa-file-medical', label: 'Historias clínicas' },
             { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
             { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
             { to: '/admin/blog', icon: 'fa-newspaper', label: 'Blog' },

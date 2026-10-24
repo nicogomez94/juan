@@ -103,6 +103,24 @@ export default function Home() {
     <div ref={ref}>
       <Navbar />
 
+      <section className="home-intro">
+        <div className="container home-intro__inner">
+          <div>
+            <p className="section-header__tag">Kadima Salud</p>
+            <h1>Consultoría y gestión para el sector salud</h1>
+            <p>Acompañamos a obras sociales, empresas de medicina prepaga e instituciones con soluciones profesionales para mejorar su gestión.</p>
+            <div className="home-intro__actions">
+              <Link to="/nosotros" className="btn btn--primary">Conocé Kadima</Link>
+              <Link to="/contacto" className="btn btn--outline">Hablemos de tu institución</Link>
+            </div>
+          </div>
+          <div className="home-intro__side">
+            <i className="fas fa-shield-heart" aria-hidden="true" />
+            <span>Experiencia, conocimiento y compromiso al servicio de las organizaciones de salud.</span>
+          </div>
+        </div>
+      </section>
+
       {/* STATS */}
       <section className="stats-strip">
         <div className="container stats-strip__grid">
@@ -125,7 +143,7 @@ export default function Home() {
           </div>
           <div className="servicios__grid">
             {[
-              { to: '/capacitaciones', icon: 'fa-graduation-cap', title: 'Capacitaciones en Salud', desc: 'Formación especializada para profesionales del sector con certificación incluida, en modalidad presencial o virtual.', cta: 'Ver capacitaciones' },
+              { to: '/cursos', icon: 'fa-graduation-cap', title: 'Capacitaciones en Salud', desc: 'Formación especializada para profesionales del sector con certificación incluida, en modalidad presencial o virtual.', cta: 'Ver cursos' },
               { to: '/surge', icon: 'fa-file-invoice-dollar', title: 'Presentaciones SURGE', desc: 'Recupero de costos ante la Superintendencia de Servicios de Salud. Gestión completa y seguimiento de expedientes.', cta: 'Ver servicio' },
               { to: '/equipos', icon: 'fa-stethoscope', title: 'Equipos Médicos', desc: 'Profesionales y equipos de cirugía organizados por especialidad para cubrir necesidades de cada institución.', cta: 'Ver especialidades' },
               { to: '/nosotros', icon: 'fa-chart-line', title: 'Consultoría Estratégica', desc: 'Asesoramiento integral en administración de salud para optimizar procesos, costos y calidad de prestaciones.', cta: 'Conocer más' },
