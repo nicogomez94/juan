@@ -381,6 +381,12 @@
   font-weight: 700;
   margin-top: 10px;
 }
+.portal-demo-link {
+  display: block;
+  color: #789098;
+  font-size: 13px;
+  margin-top: 10px;
+}
 .portal-help-box {
   display: flex;
   gap: 12px;

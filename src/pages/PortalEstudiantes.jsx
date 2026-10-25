@@ -194,16 +194,21 @@ function StudentDashboard({ demo }) {
                 <strong>{module.title}</strong>
                 <small>{module.course}</small>
                 <time>{dateLabel(module.startsAt)}</time>
-                {module.meetingUrl && (
-                  <a
-                    href={module.meetingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Ingresar a la clase{" "}
-                    <i className="fas fa-arrow-up-right-from-square" />
-                  </a>
-                )}
+                {module.meetingUrl &&
+                  (demo ? (
+                    <span className="portal-demo-link">
+                      Enlace de clase de ejemplo
+                    </span>
+                  ) : (
+                    <a
+                      href={module.meetingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Ingresar a la clase{" "}
+                      <i className="fas fa-arrow-up-right-from-square" />
+                    </a>
+                  ))}
               </div>
             </div>
           ))}
