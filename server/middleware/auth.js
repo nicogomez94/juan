@@ -18,6 +18,7 @@ function authMiddleware(req, res, next) {
   const token = authHeader.slice(7)
   try {
     const payload = jwt.verify(token, JWT_SECRET)
+    if (payload.role !== 'admin') return res.status(403).json({ error: 'Acceso reservado a administración' })
     req.admin = payload
     next()
   } catch {

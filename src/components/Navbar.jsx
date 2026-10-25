@@ -44,7 +44,7 @@ export default function Navbar() {
 
   const isActive = path => location.pathname === path ? 'active' : ''
   const isServiceActive = ['/capacitaciones', '/equipos', '/surge'].includes(location.pathname) || location.pathname.startsWith('/servicios/')
-  const isPortalActive = ['/portal-estudiantes', '/portal-historias-clinicas'].includes(location.pathname)
+  const isPortalActive = ['/portal-estudiantes', '/portal-clientes', '/portal-historias-clinicas'].includes(location.pathname)
 
   const className = `navbar navbar--home${scrolled ? ' scrolled' : ''}`
 
@@ -108,7 +108,7 @@ export default function Navbar() {
               </button>
               <ul id="portals-navigation" className="navbar__dropdown">
                 <li><Link to="/portal-estudiantes">Estudiantes</Link></li>
-                <li><Link to="/portal-historias-clinicas">Historias clínicas</Link></li>
+                <li><Link to="/portal-clientes">Clientes</Link></li>
               </ul>
             </li>
             <li><Link to="/blog" className={isActive('/blog')}>Blog</Link></li>

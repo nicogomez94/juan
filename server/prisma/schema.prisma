@@ -8,20 +8,156 @@ datasource db {
 }
 
 model Capacitacion {
-  id          Int      @id @default(autoincrement())
+  id          Int                @id @default(autoincrement())
   titulo      String
   duracion    String
   badge       String
-  badgeColor  String   @default("navy")
+  badgeColor  String             @default("navy")
   descripcion String
-  temas       Json     @default("[]")
+  temas       Json               @default("[]")
   icono       String
   publico     String
   modalidad   String
-  orden       Int      @default(0)
-  activo      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orden       Int                @default(0)
+  activo      Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  modules     CourseModule[]
+  enrollments CourseEnrollment[]
+}
+
+enum PortalRole {
+  STUDENT
+  CLIENT
+}
+
+enum CaseType {
+  MEDICATION
+  PROSTHESIS
+}
+
+enum CaseStatus {
+  REQUESTED
+  QUOTING
+  QUOTES_READY
+  AUTHORIZED
+  CLOSED
+}
+
+enum CaseDocumentKind {
+  MEDICAL_ORDER
+  QUOTE
+  AUTHORIZATION
+}
+
+model ClientOrganization {
+  id        Int          @id @default(autoincrement())
+  name      String
+  active    Boolean      @default(true)
+  users     PortalUser[]
+  cases     ClientCase[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model PortalUser {
+  id             Int                 @id @default(autoincrement())
+  email          String              @unique
+  name           String
+  passwordHash   String
+  role           PortalRole
+  active         Boolean             @default(true)
+  organizationId Int?
+  organization   ClientOrganization? @relation(fields: [organizationId], references: [id])
+  enrollments    CourseEnrollment[]
+  createdCases   ClientCase[]        @relation("CaseCreator")
+  comments       CaseComment[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model CourseEnrollment {
+  id        Int          @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  progress  Int          @default(0)
+  user      PortalUser   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Capacitacion @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+model CourseModule {
+  id          Int              @id @default(autoincrement())
+  courseId    Int
+  title       String
+  description String           @default("")
+  startsAt    DateTime?
+  meetingUrl  String?
+  order       Int              @default(0)
+  course      Capacitacion     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  resources   CourseResource[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model CourseResource {
+  id            Int          @id @default(autoincrement())
+  moduleId      Int
+  title         String
+  filename      String
+  mimeType      String
+  size          Int
+  encryptedData Bytes
+  module        CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+}
+
+model ClientCase {
+  id             Int                @id @default(autoincrement())
+  organizationId Int
+  createdById    Int
+  type           CaseType
+  subject        String
+  patientLabel   String
+  status         CaseStatus         @default(REQUESTED)
+  organization   ClientOrganization @relation(fields: [organizationId], references: [id])
+  createdBy      PortalUser         @relation("CaseCreator", fields: [createdById], references: [id])
+  documents      CaseDocument[]
+  comments       CaseComment[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([organizationId, updatedAt])
+}
+
+model CaseDocument {
+  id            Int              @id @default(autoincrement())
+  caseId        Int
+  kind          CaseDocumentKind
+  filename      String
+  mimeType      String
+  size          Int
+  vendor        String?
+  amount        Decimal?         @db.Decimal(12, 2)
+  encryptedData Bytes
+  uploadedBy    String
+  case          ClientCase       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime         @default(now())
+}
+
+model CaseComment {
+  id         Int         @id @default(autoincrement())
+  caseId     Int
+  authorId   Int?
+  authorName String
+  authorRole String
+  body       String
+  case       ClientCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author     PortalUser? @relation(fields: [authorId], references: [id])
+  createdAt  DateTime    @default(now())
 }
 
 model Equipo {
@@ -41,7 +177,7 @@ model ContactInfo {
   key       String   @unique
   label     String
   value     String
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model BlogPost {

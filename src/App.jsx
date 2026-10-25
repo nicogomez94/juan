@@ -35,7 +35,8 @@ export default function App() {
         <Route path="/capacitaciones" element={<Capacitaciones />} />
         <Route path="/cursos" element={<Cursos />} />
         <Route path="/portal-estudiantes" element={<PortalEstudiantes />} />
-        <Route path="/portal-historias-clinicas" element={<PortalHistoriasClinicas />} />
+        <Route path="/portal-clientes" element={<PortalHistoriasClinicas />} />
+        <Route path="/portal-historias-clinicas" element={<Navigate to="/portal-clientes" replace />} />
         <Route path="/surge" element={<Surge />} />
         <Route path="/equipos" element={<Equipos />} />
         <Route path="/servicios/auditoria-de-liquidacion" element={<AuditoriaLiquidacion />} />

@@ -1,58 +1,234 @@
-import { Link } from 'react-router-dom'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
-import WhatsAppButton from '../components/WhatsAppButton'
-import { studentActivities, studentCourses } from '../lib/demoPortals'
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import PortalShell from "../components/PortalShell";
+import { downloadPrivate, portalRequest } from "../lib/portalApi";
+
+const demoEnrollments = [
+  {
+    id: "demo-1",
+    progress: 36,
+    course: {
+      id: "demo-course",
+      title: "Gestión farmacéutica para obras sociales",
+      description:
+        "Herramientas para la evaluación y gestión de prestaciones farmacéuticas.",
+      duration: "8 semanas",
+      modules: [
+        {
+          id: "demo-module-1",
+          title: "Introducción a la gestión farmacéutica",
+          description: "Marco operativo, criterios y documentación.",
+          startsAt: "2026-11-03T17:00:00",
+          meetingUrl: "https://meet.google.com/",
+          resources: [
+            {
+              id: "demo-resource-1",
+              title: "Guía de la unidad",
+              filename: "guia-unidad.pdf",
+            },
+          ],
+        },
+        {
+          id: "demo-module-2",
+          title: "Auditoría y evaluación de casos",
+          description: "Lectura de casos y criterios de seguimiento.",
+          startsAt: "2026-11-10T17:00:00",
+          meetingUrl: "https://zoom.us/",
+          resources: [
+            {
+              id: "demo-resource-2",
+              title: "Bibliografía complementaria",
+              filename: "bibliografia.pdf",
+            },
+          ],
+        },
+      ],
+    },
+  },
+];
+
+function dateLabel(value) {
+  if (!value) return "Fecha a confirmar";
+  return new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+function StudentDashboard({ demo }) {
+  const [enrollments, setEnrollments] = useState(demo ? demoEnrollments : []);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (!demo)
+      portalRequest("/student/dashboard")
+        .then((data) => setEnrollments(data.enrollments))
+        .catch((err) => setError(err.message));
+  }, [demo]);
+  const agenda = useMemo(
+    () =>
+      enrollments
+        .flatMap(({ course }) =>
+          course.modules.map((module) => ({ ...module, course: course.title })),
+        )
+        .filter((item) => item.startsAt)
+        .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt)),
+    [enrollments],
+  );
+  async function download(id) {
+    try {
+      await downloadPrivate(`/student/resources/${id}`);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+  return (
+    <>
+      {error && (
+        <p className="portal-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="portal-metrics">
+        <div>
+          <i className="fas fa-book-open" />
+          <strong>{enrollments.length}</strong>
+          <span>Cursos asignados</span>
+        </div>
+        <div>
+          <i className="fas fa-layer-group" />
+          <strong>
+            {enrollments.reduce(
+              (count, item) => count + item.course.modules.length,
+              0,
+            )}
+          </strong>
+          <span>Módulos disponibles</span>
+        </div>
+        <div>
+          <i className="fas fa-calendar-days" />
+          <strong>{agenda.length}</strong>
+          <span>Clases programadas</span>
+        </div>
+      </div>
+      <div className="portal-workspace-grid">
+        <section className="portal-section-card">
+          <div className="portal-section-heading">
+            <div>
+              <span className="portal-kicker">Formación</span>
+              <h3>Mis cursos y materiales</h3>
+            </div>
+            <Link to="/cursos">
+              Ver catálogo <i className="fas fa-arrow-right" />
+            </Link>
+          </div>
+          {enrollments.length === 0 && (
+            <p className="portal-empty">
+              Aún no tenés cursos asignados. Cuando Kadima te inscriba,
+              aparecerán aquí.
+            </p>
+          )}
+          {enrollments.map(({ id, progress, course }) => (
+            <article className="portal-course" key={id}>
+              <div className="portal-course-heading">
+                <div>
+                  <span className="portal-pill">Curso activo</span>
+                  <h4>{course.title}</h4>
+                  <p>{course.description}</p>
+                </div>
+                <span className="portal-course-duration">
+                  {course.duration}
+                </span>
+              </div>
+              <div className="portal-progress">
+                <span style={{ width: `${progress}%` }} />
+              </div>
+              <small>{progress}% de avance</small>
+              <div className="portal-module-list">
+                {course.modules.map((module) => (
+                  <div className="portal-module" key={module.id}>
+                    <div className="portal-module-icon">
+                      <i className="fas fa-file-lines" />
+                    </div>
+                    <div>
+                      <h5>{module.title}</h5>
+                      <p>{module.description}</p>
+                      <small>{dateLabel(module.startsAt)}</small>
+                      {module.resources.map((resource) => (
+                        <button
+                          key={resource.id}
+                          className="portal-inline-action"
+                          disabled={demo}
+                          title={
+                            demo
+                              ? "Disponible con acceso privado"
+                              : "Descargar material"
+                          }
+                          onClick={() => download(resource.id)}
+                        >
+                          <i className="fas fa-download" /> {resource.title}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </section>
+        <aside className="portal-section-card portal-agenda">
+          <div className="portal-section-heading">
+            <div>
+              <span className="portal-kicker">Agenda</span>
+              <h3>Próximas clases</h3>
+            </div>
+          </div>
+          {agenda.length === 0 && (
+            <p className="portal-empty">
+              Las próximas fechas se publicarán aquí.
+            </p>
+          )}
+          {agenda.map((module) => (
+            <div className="portal-agenda-item" key={module.id}>
+              <span className="portal-agenda-dot" />
+              <div>
+                <strong>{module.title}</strong>
+                <small>{module.course}</small>
+                <time>{dateLabel(module.startsAt)}</time>
+                {module.meetingUrl && (
+                  <a
+                    href={module.meetingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ingresar a la clase{" "}
+                    <i className="fas fa-arrow-up-right-from-square" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+          <div className="portal-help-box">
+            <i className="fas fa-circle-question" />
+            <p>
+              Tu docente puede actualizar fechas, enlaces y bibliografía desde
+              el panel de Kadima.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </>
+  );
+}
 
 export default function PortalEstudiantes() {
   return (
-    <>
-      <Navbar />
-      <section className="page-hero portal-hero">
-        <div className="container page-hero__inner">
-          <p className="section-header__tag section-header__tag--light">Campus Kadima</p>
-          <h1>Portal de estudiantes</h1>
-          <p>Un espacio para seguir tus cursos, consultar materiales y acceder a tus certificados.</p>
-        </div>
-      </section>
-      <main className="portal-page">
-        <div className="container">
-          <div className="portal-preview-note"><i className="fas fa-circle-info" /><span>Vista previa con información ficticia. El registro y el inicio de sesión se incorporarán en la próxima etapa.</span></div>
-          <div className="portal-welcome">
-            <div><p className="section-header__tag">Mi espacio de aprendizaje</p><h2>Hola, estudiante de muestra</h2><p>Retomá tu formación y encontrá todo lo que necesitás para avanzar.</p></div>
-            <Link to="/cursos" className="btn btn--primary">Explorar cursos <i className="fas fa-arrow-right" /></Link>
-          </div>
-          <div className="portal-stats">
-            <div><strong>3</strong><span>Cursos en mi espacio</span></div>
-            <div><strong>2</strong><span>En progreso</span></div>
-            <div><strong>1</strong><span>Certificado disponible</span></div>
-          </div>
-          <div className="portal-columns">
-            <section className="portal-panel">
-              <div className="portal-panel__head"><div><p className="section-header__tag">Formación</p><h2>Mis cursos</h2></div><Link to="/cursos">Ver catálogo <i className="fas fa-arrow-right" /></Link></div>
-              <div className="student-course-list">
-                {studentCourses.map(course => (
-                  <article className="student-course" key={course.title}>
-                    <div className="student-course__head"><h3>{course.title}</h3><span>{course.status}</span></div>
-                    <p>{course.next}</p>
-                    <div className="student-course__progress"><span style={{ width: `${course.progress}%` }} /></div>
-                    <small>{course.progress}% completado</small>
-                  </article>
-                ))}
-              </div>
-            </section>
-            <section className="portal-panel">
-              <div className="portal-panel__head"><div><p className="section-header__tag">Agenda</p><h2>Próximas actividades</h2></div></div>
-              <div className="portal-activity-list">
-                {studentActivities.map(activity => <div className="portal-activity" key={activity.title}><span>{activity.date}</span><div><strong>{activity.title}</strong><small>{activity.course}</small></div></div>)}
-              </div>
-              <div className="portal-panel__callout"><i className="fas fa-award" /><div><strong>Certificados en un solo lugar</strong><p>Al completar cada curso podrás consultar y descargar tus constancias desde este portal.</p></div></div>
-            </section>
-          </div>
-        </div>
-      </main>
-      <Footer />
-      <WhatsAppButton />
-    </>
-  )
+    <PortalShell
+      role="STUDENT"
+      eyebrow="Campus Kadima"
+      title="Portal de estudiantes"
+      intro="Cursos, bibliografía y encuentros en un solo lugar."
+    >
+      {(props) => <StudentDashboard {...props} />}
+    </PortalShell>
+  );
 }

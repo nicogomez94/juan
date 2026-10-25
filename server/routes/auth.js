@@ -29,6 +29,7 @@ router.get('/verify', (req, res) => {
   }
   try {
     const payload = jwt.verify(authHeader.slice(7), JWT_SECRET)
+    if (payload.role !== 'admin') return res.status(403).json({ valid: false })
     res.json({ valid: true, username: payload.username })
   } catch {
     res.status(401).json({ valid: false })

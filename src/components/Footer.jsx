@@ -50,7 +50,7 @@ export default function Footer() {
             <h4>Portales</h4>
             <ul>
               <li><Link to="/portal-estudiantes">Estudiantes</Link></li>
-              <li><Link to="/portal-historias-clinicas">Historias clínicas</Link></li>
+              <li><Link to="/portal-clientes">Portal de clientes</Link></li>
             </ul>
           </div>
           <div className="footer__col">

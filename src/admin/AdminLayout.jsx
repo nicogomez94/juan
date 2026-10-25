@@ -8,7 +8,7 @@ const navItems = [
   { to: '/admin/dashboard', icon: 'fa-table-columns', label: 'Dashboard' },
   { to: '/admin/capacitaciones', icon: 'fa-graduation-cap', label: 'Cursos y capacitaciones' },
   { to: '/admin/portal-estudiantes', icon: 'fa-user-graduate', label: 'Portal de estudiantes' },
-  { to: '/admin/historias-clinicas', icon: 'fa-file-medical', label: 'Historias clínicas' },
+  { to: '/admin/historias-clinicas', icon: 'fa-file-medical', label: 'Portal de clientes' },
   { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
   { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
   { to: '/admin/blog', icon: 'fa-newspaper', label: 'Blog' },

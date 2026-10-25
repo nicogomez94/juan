@@ -4,6 +4,7 @@ const express = require('express')
 const cors = require('cors')
 
 const app = express()
+app.disable('x-powered-by')
 const PORT = process.env.PORT || 3001
 const HOST = process.env.HOST || '0.0.0.0'
 
@@ -20,6 +21,8 @@ app.use('/api/contact', require('./routes/contact'))
 app.use('/api/contact-info', require('./routes/contactInfo'))
 app.use('/api/blog', require('./routes/blog'))
 app.use('/api/site-images', require('./routes/siteImages'))
+app.use('/api/portal', require('./routes/portal'))
+app.use('/api/admin/portals', require('./routes/adminPortals'))
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', ts: new Date() }))
 

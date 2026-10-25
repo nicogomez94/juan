@@ -257,21 +257,21 @@ export default function Home() {
               <p className="section-header__tag">Espacios digitales</p>
               <h2 id="home-portals-title">Herramientas para estar conectados</h2>
             </div>
-            <p>Conocé los espacios que estamos preparando para estudiantes y para la gestión de historias clínicas.</p>
+            <p>Dos espacios privados para acompañar la formación y la gestión de solicitudes institucionales.</p>
           </div>
           <div className="home-portals__grid">
             <Link to="/portal-estudiantes" className="home-portal-card home-portal-card--students fade-in">
-              <span className="home-portal-card__status">Vista previa</span>
+              <span className="home-portal-card__status">Espacio privado</span>
               <span className="home-portal-card__icon"><i className="fas fa-graduation-cap" aria-hidden="true" /></span>
               <h3>Portal de estudiantes</h3>
-              <p>Un espacio para reunir cursos, avances y certificados en una misma experiencia de formación.</p>
+              <p>Cursos asignados, materiales, fechas y enlaces de clase en un mismo espacio.</p>
               <span className="home-portal-card__link">Explorar portal <i className="fas fa-arrow-right" aria-hidden="true" /></span>
             </Link>
-            <Link to="/portal-historias-clinicas" className="home-portal-card home-portal-card--clinical fade-in">
-              <span className="home-portal-card__status">Vista previa</span>
+            <Link to="/portal-clientes" className="home-portal-card home-portal-card--clinical fade-in">
+              <span className="home-portal-card__status">Espacio privado</span>
               <span className="home-portal-card__icon"><i className="fas fa-file-medical" aria-hidden="true" /></span>
-              <h3>Historias clínicas</h3>
-              <p>Una vista del futuro entorno privado para organizar y consultar documentación clínica.</p>
+              <h3>Portal de clientes</h3>
+              <p>Casos de medicamentos y prótesis, cotizaciones, autorizaciones y mensajes.</p>
               <span className="home-portal-card__link">Explorar portal <i className="fas fa-arrow-right" aria-hidden="true" /></span>
             </Link>
           </div>
