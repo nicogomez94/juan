@@ -84,9 +84,9 @@
   color: #8b9da3;
   cursor: not-allowed;
 }
-.portal-demo-notice,
 .portal-error,
-.portal-success {
+.portal-success,
+.portal-info {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -94,11 +94,6 @@
   padding: 14px 18px;
   margin-bottom: 20px;
   line-height: 1.5;
-}
-.portal-demo-notice {
-  background: #e7f5f3;
-  border: 1px solid #c4e4e0;
-  color: #14535b;
 }
 .portal-error {
   background: #fff1ed;
@@ -109,6 +104,11 @@
   background: #e5f5e9;
   border: 1px solid #b7dfbf;
   color: #246238;
+}
+.portal-info {
+  background: #eef5f6;
+  border: 1px solid #c8dce0;
+  color: #345e68;
 }
 .portal-state,
 .portal-empty {
@@ -381,7 +381,7 @@
   font-weight: 700;
   margin-top: 10px;
 }
-.portal-demo-link {
+.portal-agenda-link-pending {
   display: block;
   color: #789098;
   font-size: 13px;
@@ -405,10 +405,6 @@
   color: #087b81;
   margin-top: 3px;
 }
-.portal-help-box--wide {
-  margin: 0 0 20px;
-}
-
 .portal-client-intro {
   display: flex;
   align-items: center;

@@ -44,15 +44,31 @@ export async function downloadPrivate(path, admin = false) {
   );
   if (!response.ok) throw new Error("No se pudo descargar el archivo.");
   const blob = await response.blob();
+  saveBlob(
+    blob,
+    response.headers
+      .get("Content-Disposition")
+      ?.match(/filename="([^"]+)"/)?.[1] || "documento",
+  );
+}
+
+function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download =
-    response.headers
-      .get("Content-Disposition")
-      ?.match(/filename="([^"]+)"/)?.[1] || "documento";
+  anchor.download = filename;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export async function downloadExample(filename = "documento-kadima.pdf") {
+  const response = await fetch("/portal-documento.pdf");
+  if (!response.ok) throw new Error("No se pudo descargar el archivo.");
+  saveBlob(await response.blob(), filename);
+}
+
+export function downloadLocalFile(file) {
+  saveBlob(file, file.name);
 }

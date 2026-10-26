@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
+import { adminPortalRequest } from '../lib/portalApi'
 import { demoCourses } from '../lib/demoCourses'
 
 export default function AdminDashboard() {
@@ -9,20 +10,22 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get('/api/capacitaciones/all').then(d => ({ count: d.length, demo: false })).catch(() => ({ count: demoCourses.length, demo: true })),
+      api.get('/api/capacitaciones/all').then(d => d.length).catch(() => demoCourses.length),
       api.get('/api/equipos/all').then(d => d.length).catch(() => 0),
       api.get('/api/blog/all').then(d => ({ total: d.length, pub: d.filter(p => p.publicado).length, draft: d.filter(p => !p.publicado).length })).catch(() => ({ total: 0, pub: 0, draft: 0 })),
       api.get('/api/site-images/all').then(d => d.filter(image => image.customUrl).length).catch(() => 0),
-    ]).then(([caps, equips, blog, customImages]) => {
-      setStats({ caps: caps.count, capsDemo: caps.demo, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft, customImages })
+      adminPortalRequest('/summary').catch(() => ({ students: 0, clients: 0, pending: 0 })),
+    ]).then(([caps, equips, blog, customImages, portals]) => {
+      setStats({ caps, equips, blogTotal: blog.total, blogPub: blog.pub, blogDraft: blog.draft, customImages, portals })
       setLoading(false)
     })
   }, [])
 
   const cards = loading ? [] : [
-    { label: stats.capsDemo ? 'Cursos de muestra' : 'Capacitaciones', value: stats.caps, icon: 'fa-graduation-cap', color: 'teal', to: '/admin/capacitaciones' },
-    { label: 'Estudiantes de muestra', value: 1, icon: 'fa-user-graduate', color: 'navy', to: '/admin/portal-estudiantes' },
-    { label: 'Historias de muestra', value: 3, icon: 'fa-file-medical', color: 'teal', to: '/admin/historias-clinicas' },
+    { label: 'Capacitaciones', value: stats.caps, icon: 'fa-graduation-cap', color: 'teal', to: '/admin/capacitaciones' },
+    { label: 'Estudiantes', value: stats.portals.students, icon: 'fa-user-graduate', color: 'navy', to: '/admin/portal-estudiantes' },
+    { label: 'Clientes', value: stats.portals.clients, icon: 'fa-building', color: 'teal', to: '/admin/historias-clinicas' },
+    { label: 'Casos en gestión', value: stats.portals.pending, icon: 'fa-file-medical', color: 'accent', to: '/admin/historias-clinicas' },
     { label: 'Equipos médicos', value: stats.equips, icon: 'fa-stethoscope', color: 'navy', to: '/admin/equipos' },
     { label: 'Posts publicados', value: stats.blogPub, icon: 'fa-circle-check', color: 'accent', to: '/admin/blog' },
     { label: 'Borradores', value: stats.blogDraft, icon: 'fa-file-pen', color: 'orange', to: '/admin/blog' },
@@ -66,7 +69,7 @@ export default function AdminDashboard() {
           {[
             { to: '/admin/capacitaciones', icon: 'fa-graduation-cap', label: 'Capacitaciones' },
             { to: '/admin/portal-estudiantes', icon: 'fa-user-graduate', label: 'Portal de estudiantes' },
-            { to: '/admin/historias-clinicas', icon: 'fa-file-medical', label: 'Historias clínicas' },
+            { to: '/admin/historias-clinicas', icon: 'fa-file-medical', label: 'Portal de clientes' },
             { to: '/admin/equipos', icon: 'fa-stethoscope', label: 'Equipos' },
             { to: '/admin/contacto', icon: 'fa-address-book', label: 'Datos de contacto' },
             { to: '/admin/blog', icon: 'fa-newspaper', label: 'Blog' },

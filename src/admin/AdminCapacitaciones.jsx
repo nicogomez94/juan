@@ -91,8 +91,8 @@ export default function AdminCapacitaciones() {
       <div className="admin-preview-banner">
         <i className="fas fa-circle-info" />
         <div>
-          <strong>{isDemo ? 'Catálogo de demostración' : 'Catálogo conectado con Cursos'}</strong>
-          <p>{isDemo ? 'Esta instancia no tiene base de datos configurada. Se muestran cursos ficticios para revisar la sección; la edición se habilitará al conectar la base de datos.' : 'Las capacitaciones activas aparecen en la página de cursos. Los valores de esa vista son ilustrativos hasta integrar el sistema de pagos.'} <a href="/cursos" target="_blank" rel="noopener noreferrer">Ver Cursos</a>.</p>
+          <strong>{isDemo ? 'Catálogo sin conexión' : 'Catálogo conectado con Cursos'}</strong>
+          <p>{isDemo ? 'Para editar las capacitaciones de esta instancia hay que conectar la base de datos.' : 'Las capacitaciones activas aparecen en la página de cursos. Los valores de esa vista son orientativos hasta integrar el sistema de pagos.'} <a href="/cursos" target="_blank" rel="noopener noreferrer">Ver Cursos</a>.</p>
         </div>
       </div>
 

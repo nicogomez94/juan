@@ -95,7 +95,6 @@ function ContactForm() {
 export default function Home() {
   const [contact, setContact] = useState({ email: 'contacto@kadimasalud.com.ar', whatsapp: '5491100000000', instagram: 'KadimaSalud' })
   const [featuredCourses, setFeaturedCourses] = useState(demoCourses.slice(0, 3))
-  const [usingDemoCourses, setUsingDemoCourses] = useState(true)
   const ref = useFadeIn([featuredCourses])
 
   useEffect(() => {
@@ -103,7 +102,6 @@ export default function Home() {
     api.get('/api/capacitaciones').then(courses => {
       if (Array.isArray(courses) && courses.length) {
         setFeaturedCourses(courses.slice(0, 3))
-        setUsingDemoCourses(false)
       }
     }).catch(() => {})
   }, [])
@@ -241,7 +239,6 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          {usingDemoCourses && <p className="home-featured-courses__note">Oferta de muestra para esta vista previa.</p>}
           <div className="home-featured-courses__more fade-in">
             <Link to="/cursos" className="btn btn--outline">
               Explorar todos los cursos <i className="fas fa-arrow-right" aria-hidden="true" />

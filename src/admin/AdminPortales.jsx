@@ -978,16 +978,15 @@ export default function AdminPortales({ type }) {
       <div className="admin-portal-card">
         <h2>Portales privados</h2>
         <p>
-          El diseño público ya se puede revisar. Para gestionar cuentas y
-          documentos en esta instancia hay que configurar PostgreSQL, JWT y la
-          clave de cifrado del portal.
+          Para gestionar cuentas y documentos en esta instancia hay que
+          configurar PostgreSQL, JWT y la clave de cifrado del portal.
         </p>
         <Link
           to={type === "students" ? "/portal-estudiantes" : "/portal-clientes"}
           target="_blank"
           className="btn btn--primary"
         >
-          Ver demostración
+          Ver portal
         </Link>
       </div>
     );

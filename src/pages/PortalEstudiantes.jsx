@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PortalShell from "../components/PortalShell";
-import { downloadPrivate, portalRequest } from "../lib/portalApi";
+import {
+  downloadExample,
+  downloadPrivate,
+  portalRequest,
+} from "../lib/portalApi";
 
 const demoEnrollments = [
   {
@@ -74,9 +78,10 @@ function StudentDashboard({ demo }) {
         .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt)),
     [enrollments],
   );
-  async function download(id) {
+  async function download(resource) {
     try {
-      await downloadPrivate(`/student/resources/${id}`);
+      if (demo) await downloadExample(resource.filename);
+      else await downloadPrivate(`/student/resources/${resource.id}`);
     } catch (err) {
       setError(err.message);
     }
@@ -157,13 +162,8 @@ function StudentDashboard({ demo }) {
                         <button
                           key={resource.id}
                           className="portal-inline-action"
-                          disabled={demo}
-                          title={
-                            demo
-                              ? "Disponible con acceso privado"
-                              : "Descargar material"
-                          }
-                          onClick={() => download(resource.id)}
+                          title="Descargar material"
+                          onClick={() => download(resource)}
                         >
                           <i className="fas fa-download" /> {resource.title}
                         </button>
@@ -196,8 +196,11 @@ function StudentDashboard({ demo }) {
                 <time>{dateLabel(module.startsAt)}</time>
                 {module.meetingUrl &&
                   (demo ? (
-                    <span className="portal-demo-link">
-                      Enlace de clase de ejemplo
+                    <span
+                      className="portal-agenda-link-pending"
+                      title="El enlace se habilita al confirmar el encuentro"
+                    >
+                      Ingresar a la clase
                     </span>
                   ) : (
                     <a

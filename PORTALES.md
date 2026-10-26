@@ -28,6 +28,6 @@ PORTAL_SEED_DEMO=true node prisma/seedPortals.js
 
 La carga es idempotente y no publica contraseñas. El administrador puede asignar una nueva contraseña desde el panel para probar esos accesos.
 
-Si falta la configuración privada, el sitio público muestra un recorrido interactivo con datos ficticios para aprobación. Ese recorrido no guarda ni envía archivos. No usarlo para información clínica real.
+Si falta la configuración privada, el sitio público mantiene la interfaz del portal con datos ficticios en memoria. Esos cambios se pierden al recargar la página y no se envían archivos. No usar esa instancia para información clínica real.
 
 El catálogo de cursos y su eventual sistema de pago son independientes de la asignación de cursos del portal; la compra online sigue fuera del alcance de esta etapa.

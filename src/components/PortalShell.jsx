@@ -16,7 +16,7 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
     portalRequest("/status")
       .then(({ available }) => {
         if (!available) {
-          if (active) setMode("preview");
+          if (active) setMode("sample");
           return;
         }
         portalRequest("/me")
@@ -31,7 +31,7 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
           })
           .catch(() => active && setMode("login"));
       })
-      .catch(() => active && setMode("preview"));
+      .catch(() => active && setMode("sample"));
     return () => {
       active = false;
     };
@@ -137,27 +137,15 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
               </form>
             </div>
           )}
-          {(mode === "live" || mode === "preview") && (
+          {(mode === "live" || mode === "sample") && (
             <>
-              {mode === "preview" && (
-                <div className="portal-demo-notice" role="status">
-                  <i className="fas fa-circle-info" />
-                  <span>
-                    Recorrido de demostración con información ficticia. Ningún
-                    archivo se envía ni se guarda; las descargas reales
-                    requieren acceso privado.
-                  </span>
-                </div>
-              )}
               <div className="portal-workspace-top">
                 <div>
-                  <span className="portal-kicker">
-                    {mode === "preview" ? "Vista para aprobación" : "Mi cuenta"}
-                  </span>
+                  <span className="portal-kicker">Mi cuenta</span>
                   <h2>
-                    {mode === "preview"
-                      ? "Así se verá tu espacio"
-                      : `Hola, ${session.name}`}
+                    Hola,{" "}
+                    {session?.name ||
+                      (role === "STUDENT" ? "María" : "equipo institucional")}
                   </h2>
                 </div>
                 {mode === "live" && (
@@ -166,7 +154,18 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
                   </button>
                 )}
               </div>
-              {children({ demo: mode === "preview", user: session })}
+              {children({
+                demo: mode === "sample",
+                user:
+                  session ||
+                  (role === "STUDENT"
+                    ? { name: "María", role: "STUDENT" }
+                    : {
+                        name: "Equipo institucional",
+                        role: "CLIENT",
+                        organization: { name: "Obra Social del Centro" },
+                      }),
+              })}
             </>
           )}
         </div>

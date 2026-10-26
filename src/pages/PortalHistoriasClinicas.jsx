@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import PortalShell from "../components/PortalShell";
-import { downloadPrivate, portalRequest } from "../lib/portalApi";
+import {
+  downloadExample,
+  downloadLocalFile,
+  downloadPrivate,
+  portalRequest,
+} from "../lib/portalApi";
 
 const statusLabels = {
   REQUESTED: "Pedido recibido",
@@ -21,14 +26,14 @@ const demoCases = [
     type: "MEDICATION",
     status: "QUOTES_READY",
     subject: "Solicitud de cobertura farmacéutica",
-    patientLabel: "Paciente de ejemplo · 0042",
+    patientLabel: "Afiliado · 0042",
     updatedAt: "2026-10-24T15:00:00",
     documents: [
       {
         id: 1,
         kind: "MEDICAL_ORDER",
         filename: "pedido-medico.pdf",
-        uploadedBy: "Obra Social Demo",
+        uploadedBy: "Equipo institucional",
       },
       {
         id: 2,
@@ -58,7 +63,7 @@ const demoCases = [
     comments: [
       {
         id: 1,
-        authorName: "Obra Social Demo",
+        authorName: "Equipo institucional",
         authorRole: "CLIENT",
         body: "Adjuntamos el pedido médico para solicitar cotizaciones.",
         createdAt: "2026-10-21T10:00:00",
@@ -77,14 +82,14 @@ const demoCases = [
     type: "PROSTHESIS",
     status: "QUOTING",
     subject: "Solicitud de prótesis",
-    patientLabel: "Paciente de ejemplo · 0037",
+    patientLabel: "Afiliado · 0037",
     updatedAt: "2026-10-23T12:00:00",
     documents: [
       {
         id: 5,
         kind: "MEDICAL_ORDER",
         filename: "orden-medica.pdf",
-        uploadedBy: "Obra Social Demo",
+        uploadedBy: "Equipo institucional",
       },
     ],
     comments: [],
@@ -165,14 +170,15 @@ function CaseWorkspace({ demo, user }) {
               id: `demo-${id}`,
               kind: "MEDICAL_ORDER",
               filename: values.get("file")?.name || "pedido-medico.pdf",
-              uploadedBy: "Cliente de ejemplo",
+              file: values.get("file"),
+              uploadedBy: user?.name || "Equipo institucional",
             },
           ],
           comments: values.get("comment")
             ? [
                 {
                   id: `message-${id}`,
-                  authorName: "Cliente de ejemplo",
+                  authorName: user?.name || "Equipo institucional",
                   authorRole: "CLIENT",
                   body: String(values.get("comment")),
                   createdAt: now,
@@ -184,7 +190,7 @@ function CaseWorkspace({ demo, user }) {
         setSelectedId(id);
         setCreating(false);
         setNotice(
-          "Caso creado en la demostración. No se envió ningún archivo.",
+          "El caso quedó solo en esta sesión. El servicio privado aún no está conectado.",
         );
         return;
       }
@@ -215,7 +221,7 @@ function CaseWorkspace({ demo, user }) {
             ...detail.comments,
             {
               id: `message-${Date.now()}`,
-              authorName: "Cliente de ejemplo",
+              authorName: user?.name || "Equipo institucional",
               authorRole: "CLIENT",
               body: String(body),
               createdAt: new Date().toISOString(),
@@ -223,6 +229,9 @@ function CaseWorkspace({ demo, user }) {
           ],
         });
         form.reset();
+        setNotice(
+          "El mensaje quedó solo en esta sesión. El servicio privado aún no está conectado.",
+        );
         return;
       }
       await portalRequest(`/client/cases/${selectedId}/comments`, {
@@ -254,12 +263,13 @@ function CaseWorkspace({ demo, user }) {
               id: `authorization-${Date.now()}`,
               kind: "AUTHORIZATION",
               filename: file.name,
-              uploadedBy: "Cliente de ejemplo",
+              file,
+              uploadedBy: user?.name || "Equipo institucional",
             },
           ],
         });
         setNotice(
-          "Autorización agregada a la demostración. No se envió ningún archivo.",
+          "La autorización quedó solo en esta sesión. El servicio privado aún no está conectado.",
         );
         return;
       }
@@ -275,9 +285,11 @@ function CaseWorkspace({ demo, user }) {
       setWorking(false);
     }
   }
-  async function download(id) {
+  async function download(document) {
     try {
-      await downloadPrivate(`/client/documents/${id}`);
+      if (demo && document.file) downloadLocalFile(document.file);
+      else if (demo) await downloadExample(document.filename);
+      else await downloadPrivate(`/client/documents/${document.id}`);
     } catch (err) {
       setError(err.message);
     }
@@ -300,23 +312,13 @@ function CaseWorkspace({ demo, user }) {
           <i className="fas fa-plus" /> Nuevo caso
         </button>
       </div>
-      {demo && (
-        <div className="portal-help-box portal-help-box--wide">
-          <i className="fas fa-lock" />
-          <p>
-            Podés recorrer el flujo con datos ficticios. Los archivos elegidos
-            se muestran solo en esta pantalla y no se envían; la descarga
-            requiere acceso privado.
-          </p>
-        </div>
-      )}
       {error && (
         <p className="portal-error" role="alert">
           {error}
         </p>
       )}
       {notice && (
-        <p className="portal-success" role="status">
+        <p className={demo ? "portal-info" : "portal-success"} role="status">
           {notice}
         </p>
       )}
@@ -397,9 +399,7 @@ function CaseWorkspace({ demo, user }) {
           <div className="portal-section-heading">
             <div>
               <span className="portal-kicker">
-                {demo
-                  ? "Institución de ejemplo"
-                  : user?.organization?.name || "Mi institución"}
+                {user?.organization?.name || "Mi institución"}
               </span>
               <h3>Casos</h3>
             </div>
@@ -504,8 +504,7 @@ function CaseWorkspace({ demo, user }) {
                     <button
                       className="portal-icon-button"
                       title="Descargar"
-                      disabled={demo}
-                      onClick={() => download(doc.id)}
+                      onClick={() => download(doc)}
                     >
                       <i className="fas fa-download" />
                     </button>

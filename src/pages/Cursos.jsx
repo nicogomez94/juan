@@ -26,7 +26,6 @@ export default function Cursos() {
   const { search } = useLocation()
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
-  const [usingDemo, setUsingDemo] = useState(false)
   const [selected, setSelected] = useState(null)
   const [step, setStep] = useState('detail')
   const closeButtonRef = useRef(null)
@@ -37,10 +36,9 @@ export default function Cursos() {
         if (Array.isArray(data)) setCourses(data)
         else {
           setCourses(demoCourses)
-          setUsingDemo(true)
         }
       })
-      .catch(() => { setCourses(demoCourses); setUsingDemo(true) })
+      .catch(() => { setCourses(demoCourses) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -91,7 +89,7 @@ export default function Cursos() {
                 <h2>Elegí tu próximo curso</h2>
                 <p>Explorá el programa, la modalidad y el valor de referencia de cada propuesta.</p>
               </div>
-              <div className="course-section__notice"><i className="fas fa-circle-info" /> Vista previa: {usingDemo ? 'el catálogo y los valores son de muestra' : 'los valores son de muestra'} y el pago en línea está en preparación.</div>
+              <div className="course-section__notice"><i className="fas fa-circle-info" /> Los valores son orientativos. El pago en línea se habilitará próximamente.</div>
             </div>
 
             {loading ? (
@@ -110,7 +108,7 @@ export default function Cursos() {
                     <p>{course.descripcion}</p>
                     <div className="course-card__meta"><span><i className="far fa-clock" /> {course.duracion}</span><span><i className="fas fa-display" /> {course.modalidad}</span></div>
                     <div className="course-card__footer">
-                      <div><small>Valor de muestra</small><strong>{formatPrice(course.titulo)}</strong></div>
+                      <div><small>Valor de referencia</small><strong>{formatPrice(course.titulo)}</strong></div>
                       <button type="button" className="btn btn--primary" onClick={() => openCourse(course)}>Ver curso <i className="fas fa-arrow-right" /></button>
                     </div>
                   </article>
@@ -122,7 +120,7 @@ export default function Cursos() {
 
         <section className="course-support">
           <div className="container course-support__inner">
-            <div><p className="section-header__tag">Acompañamiento</p><h2>Una experiencia de formación clara y accesible</h2><p>El futuro portal reunirá tus cursos, avance y certificados en un solo lugar.</p></div>
+            <div><p className="section-header__tag">Acompañamiento</p><h2>Una experiencia de formación clara y accesible</h2><p>El portal reúne tus cursos, materiales y próximas clases en un solo lugar.</p></div>
             <Link to="/portal-estudiantes" className="btn btn--outline">Conocer el portal de estudiantes <i className="fas fa-arrow-right" /></Link>
           </div>
         </section>
@@ -140,7 +138,7 @@ export default function Cursos() {
                 <div className="course-dialog__facts"><span><i className="far fa-clock" /> {selected.duracion}</span><span><i className="fas fa-display" /> {selected.modalidad}</span><span><i className="fas fa-users" /> {selected.publico}</span></div>
                 <h3>Programa</h3>
                 <ul className="course-dialog__topics">{getTopics(selected.temas).map(topic => <li key={topic}><i className="fas fa-check" /> {topic}</li>)}</ul>
-                <div className="course-dialog__bottom"><div><small>Valor de muestra</small><strong>{formatPrice(selected.titulo)}</strong></div><button className="btn btn--primary" type="button" onClick={() => setStep('checkout')}>Inscribirme <i className="fas fa-arrow-right" /></button></div>
+                <div className="course-dialog__bottom"><div><small>Valor de referencia</small><strong>{formatPrice(selected.titulo)}</strong></div><button className="btn btn--primary" type="button" onClick={() => setStep('checkout')}>Inscribirme <i className="fas fa-arrow-right" /></button></div>
               </>
             ) : (
               <>
@@ -148,7 +146,7 @@ export default function Cursos() {
                 <p className="section-header__tag">Inscripción</p>
                 <h2>Resumen de compra</h2>
                 <div className="checkout-summary"><span>{selected.titulo}</span><strong>{formatPrice(selected.titulo)}</strong></div>
-                <div className="checkout-placeholder"><i className="fas fa-lock" /><h3>Pago en línea en preparación</h3><p>Esta es la vista previa del proceso de compra. Todavía no se solicitan datos de tarjeta ni se realizan cobros.</p></div>
+                <div className="checkout-placeholder"><i className="fas fa-lock" /><h3>Pago en línea en preparación</h3><p>Para consultar la inscripción a este curso, contactanos. Todavía no se solicitan datos de tarjeta ni se realizan cobros.</p></div>
                 <Link to="/contacto" className="btn btn--primary btn--full" onClick={() => setSelected(null)}>Consultar por este curso</Link>
               </>
             )}

@@ -1992,7 +1992,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .page-error i { font-size: 2.5rem; color: var(--color-border); margin-bottom: 1rem; display: block; }
 
-/* ===== CURSOS Y PORTALES: VISTA PREVIA ===== */
+/* ===== CURSOS Y PORTALES ===== */
 .course-hero,
 .portal-hero {
   padding: 4.5rem 0;

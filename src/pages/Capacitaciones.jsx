@@ -24,13 +24,12 @@ function useFadeIn(deps = []) {
 export default function Capacitaciones() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
-  const [usingDemo, setUsingDemo] = useState(false)
   const ref = useFadeIn([items])
 
   useEffect(() => {
     api.get('/api/capacitaciones')
       .then(data => { setItems(data); setLoading(false) })
-      .catch(() => { setItems(demoCourses); setUsingDemo(true); setLoading(false) })
+      .catch(() => { setItems(demoCourses); setLoading(false) })
   }, [])
 
   return (
@@ -75,7 +74,6 @@ export default function Capacitaciones() {
             <p className="section-header__desc">Cada capacitación está pensada para un perfil específico, con contenidos prácticos y actualizados.</p>
           </div>
 
-          {usingDemo && <div className="portal-preview-note"><i className="fas fa-circle-info" /><span>Oferta de muestra para esta vista previa. Los cursos definitivos se cargarán al conectar la base de datos.</span></div>}
 
           {loading ? (
             <div className="loading-grid">
