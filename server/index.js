@@ -8,7 +8,10 @@ app.disable('x-powered-by')
 const PORT = process.env.PORT || 3001
 const HOST = process.env.HOST || '0.0.0.0'
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173', process.env.FRONTEND_URL].filter(Boolean) }))
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:4173', process.env.FRONTEND_URL].filter(Boolean),
+  credentials: true
+}))
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
 
