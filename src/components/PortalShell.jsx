@@ -102,14 +102,14 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
                   />
                 </div>
               </div>
-              <form className="portal-login-form" onSubmit={login}>
+              <form className="portal-login-form" onSubmit={login} autoComplete={import.meta.env.DEV ? "off" : undefined}>
                 <h2>Iniciar sesión</h2>
                 <label>
                   Correo electrónico
                   <input
                     name="email"
                     type="email"
-                    autoComplete="username"
+                    autoComplete={import.meta.env.DEV ? "off" : "username"}
                     required
                   />
                 </label>
@@ -118,7 +118,7 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
                   <input
                     name="password"
                     type="password"
-                    autoComplete="current-password"
+                    autoComplete={import.meta.env.DEV ? "new-password" : "current-password"}
                     required
                   />
                 </label>

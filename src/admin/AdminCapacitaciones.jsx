@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { useToast } from './ToastContext'
 import { demoCourses } from '../lib/demoCourses'
+import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 
 const EMPTY = { titulo: '', duracion: '', badge: '', badgeColor: 'navy', descripcion: '', temas: '', icono: 'fa-book', publico: '', modalidad: 'Virtual', activo: true }
 
@@ -23,7 +24,7 @@ export default function AdminCapacitaciones() {
   }
   useEffect(load, [])
 
-  function openCreate() { setForm(EMPTY); setModal('create') }
+  function openCreate() { setForm(DEBUG ? { ...EMPTY, ...debugDefaults.capacitacion } : EMPTY); setModal('create') }
   function openEdit(item) {
     setForm({ ...item, temas: Array.isArray(item.temas) ? item.temas.join('\n') : '' })
     setModal(item)

@@ -3351,3 +3351,34 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .home-service-card::before,
   .home-course-card::before { transition: none; }
 }
+.debug-autofill {
+  position: fixed;
+  z-index: 1200;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 999px;
+  background: #172d3b;
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  box-shadow: 0 8px 24px rgba(15, 32, 42, .2);
+  cursor: pointer;
+}
+
+.debug-autofill__dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: #87939b;
+}
+
+.debug-autofill.is-on .debug-autofill__dot { background: #71d8a5; }
+.debug-autofill:focus-visible { outline: 3px solid #71d8a5; outline-offset: 2px; }

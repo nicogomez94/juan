@@ -1,5 +1,9 @@
 # Portales privados de Kadima
 
+## Autocompletado local
+
+Con `npm run dev`, el interruptor **Modo debug** aparece abajo a la izquierda y está activado por defecto. Completa los formularios visibles con datos ficticios, incluidos los accesos de prueba y los PDF de ejemplo, sin enviarlos automáticamente. El interruptor se puede apagar y la elección queda guardada en el navegador. Las credenciales de prueba se leen de `.env.development.local`, que no se versiona. En el build de producción no aparece el interruptor ni se incluyen esas credenciales.
+
 ## Funciones
 
 - **Estudiantes:** acceso individual, cursos asignados, módulos, fechas de encuentro, enlaces HTTPS de Zoom/Meet, bibliografía privada y avance.

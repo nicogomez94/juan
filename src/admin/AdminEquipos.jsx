@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { api, uploadImages } from '../lib/api'
 import ImageUploader from './ImageUploader'
 import { useToast } from './ToastContext'
+import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 
 const EMPTY = { nombre: '', descripcion: '', imagen: '', orden: 0, activo: true }
 
@@ -23,7 +24,7 @@ export default function AdminEquipos() {
   useEffect(load, [])
 
   function openCreate() {
-    setForm(EMPTY)
+    setForm(DEBUG ? { ...EMPTY, ...debugDefaults.equipo } : EMPTY)
     setPendingImage([])
     setModal('create')
   }

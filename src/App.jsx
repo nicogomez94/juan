@@ -24,10 +24,12 @@ import AdminBlog from './admin/AdminBlog'
 import AdminSiteImages from './admin/AdminSiteImages'
 import AdminPortales from './admin/AdminPortales'
 import ProtectedRoute from './admin/ProtectedRoute'
+import DebugAutofill from './components/DebugAutofill'
 
 export default function App() {
   return (
     <BrowserRouter>
+      {import.meta.env.DEV && <DebugAutofill />}
       <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />

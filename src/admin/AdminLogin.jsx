@@ -45,7 +45,7 @@ export default function AdminLogin() {
           </div>
         )}
 
-        <form onSubmit={submit}>
+        <form onSubmit={submit} autoComplete={import.meta.env.DEV ? 'off' : undefined}>
           <div className="admin-form__group">
             <label>Usuario</label>
             <input
@@ -53,7 +53,7 @@ export default function AdminLogin() {
               value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
               placeholder="admin"
-              autoComplete="username"
+              autoComplete={import.meta.env.DEV ? 'off' : 'username'}
               required
             />
           </div>
@@ -64,7 +64,7 @@ export default function AdminLogin() {
               value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
               placeholder="••••••••"
-              autoComplete="current-password"
+              autoComplete={import.meta.env.DEV ? 'new-password' : 'current-password'}
               required
             />
           </div>

@@ -1,5 +1,6 @@
-// Debug defaults — pre-fills forms when VITE_DEBUG=true
-export const DEBUG = import.meta.env.VITE_DEBUG === 'true'
+// Local development only. The switch defaults to on and never appears in builds.
+export const DEBUG_STORAGE_KEY = 'kadima-debug-autofill'
+export const DEBUG = import.meta.env.DEV && localStorage.getItem(DEBUG_STORAGE_KEY) !== 'off'
 
 export const debugDefaults = {
   contactForm: {
@@ -10,8 +11,13 @@ export const debugDefaults = {
     consulta: 'Hola, me interesa conocer más sobre sus capacitaciones en administración de obras sociales.',
   },
   adminLogin: {
-    username: 'admin',
-    password: 'admin',
+    username: import.meta.env.DEV ? import.meta.env.VITE_DEBUG_ADMIN_USER || '' : '',
+    password: import.meta.env.DEV ? import.meta.env.VITE_DEBUG_ADMIN_PASSWORD || '' : '',
+  },
+  portalLogin: {
+    studentEmail: 'estudiante-demo@kadima.invalid',
+    clientEmail: 'cliente-demo@kadima.invalid',
+    password: import.meta.env.DEV ? import.meta.env.VITE_DEBUG_PORTAL_PASSWORD || '' : '',
   },
   capacitacion: {
     titulo: 'Nueva Capacitación',
