@@ -29,6 +29,7 @@ const demoCases = [
     subject: "Solicitud de cobertura farmacéutica",
     patientLabel: "Afiliado · 0042",
     updatedAt: "2026-10-24T15:00:00",
+    unreadMessages: 1,
     documents: [
       {
         id: 1,
@@ -85,6 +86,7 @@ const demoCases = [
     subject: "Solicitud de prótesis",
     patientLabel: "Afiliado · 0037",
     updatedAt: "2026-10-23T12:00:00",
+    unreadMessages: 0,
     documents: [
       {
         id: 5,
@@ -109,6 +111,7 @@ function CaseWorkspace({ demo, user }) {
   const [selectedId, setSelectedId] = useState(demo ? demoCases[0].id : null);
   const [detail, setDetail] = useState(demo ? demoCases[0] : null);
   const [creating, setCreating] = useState(false);
+  const [activePanel, setActivePanel] = useState("summary");
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -135,6 +138,22 @@ function CaseWorkspace({ demo, user }) {
       .catch((err) => setError(err.message));
   }, [selectedId, demo, cases]);
 
+  useEffect(() => {
+    if (demo) return undefined;
+    const interval = window.setInterval(async () => {
+      try {
+        const records = await portalRequest("/client/cases");
+        setCases(records);
+        if (selectedId) {
+          setDetail(await portalRequest(`/client/cases/${selectedId}`));
+        }
+      } catch {
+        // La próxima sincronización vuelve a intentarlo sin interrumpir el uso.
+      }
+    }, 15000);
+    return () => window.clearInterval(interval);
+  }, [demo, selectedId]);
+
   function updateDemo(record) {
     setCases((current) =>
       current.map((item) => (item.id === record.id ? record : item)),
@@ -148,6 +167,31 @@ function CaseWorkspace({ demo, user }) {
       loadCases(selectedId),
       portalRequest(`/client/cases/${selectedId}`).then(setDetail),
     ]);
+  }
+
+  async function openMessages(caseId = selectedId) {
+    if (!caseId) return;
+    setSelectedId(caseId);
+    setActivePanel("messages");
+    if (demo) {
+      setCases((current) =>
+        current.map((item) =>
+          item.id === caseId ? { ...item, unreadMessages: 0 } : item,
+        ),
+      );
+      return;
+    }
+    try {
+      const record = await portalRequest(`/client/cases/${caseId}?markRead=1`);
+      setDetail(record);
+      setCases((current) =>
+        current.map((item) =>
+          item.id === caseId ? { ...item, unreadMessages: 0 } : item,
+        ),
+      );
+    } catch (err) {
+      setError(err.message);
+    }
   }
   async function createCase(event) {
     event.preventDefault();
@@ -166,6 +210,7 @@ function CaseWorkspace({ demo, user }) {
           subject: String(values.get("subject")),
           patientLabel: String(values.get("patientLabel")),
           updatedAt: now,
+          unreadMessages: 0,
           documents: [
             {
               id: `demo-${id}`,
@@ -297,8 +342,12 @@ function CaseWorkspace({ demo, user }) {
   }
 
   const activeCases = cases.filter((item) => item.status !== "CLOSED").length;
-  const pendingActions = cases.filter((item) =>
-    ["QUOTES_READY", "AUTHORIZED"].includes(item.status),
+  const unreadMessages = cases.reduce(
+    (total, item) => total + Number(item.unreadMessages || 0),
+    0,
+  );
+  const pendingActions = cases.filter(
+    (item) => item.status === "QUOTES_READY",
   ).length;
   const closedCases = cases.filter((item) => item.status === "CLOSED").length;
 
@@ -330,9 +379,14 @@ function CaseWorkspace({ demo, user }) {
           <small>En seguimiento</small>
         </article>
         <article>
-          <span className="portal-client-metric-icon portal-client-metric-icon--alert"><i className="fas fa-bell" /></span>
-          <div><strong>{pendingActions}</strong><span>Requieren atención</span></div>
-          <small>Revisar ahora</small>
+          <span className="portal-client-metric-icon portal-client-metric-icon--alert"><i className="fas fa-envelope" /></span>
+          <div><strong>{unreadMessages}</strong><span>Mensajes nuevos</span></div>
+          <small>De Kadima</small>
+        </article>
+        <article>
+          <span className="portal-client-metric-icon portal-client-metric-icon--action"><i className="fas fa-file-signature" /></span>
+          <div><strong>{pendingActions}</strong><span>Autorizaciones</span></div>
+          <small>Requieren acción</small>
         </article>
         <article>
           <span className="portal-client-metric-icon portal-client-metric-icon--done"><i className="fas fa-circle-check" /></span>
@@ -446,7 +500,10 @@ function CaseWorkspace({ demo, user }) {
             <button
               key={item.id}
               className={`portal-case-item ${selectedId === item.id ? "is-active" : ""}`}
-              onClick={() => setSelectedId(item.id)}
+              onClick={() => {
+                setSelectedId(item.id);
+                setActivePanel("summary");
+              }}
             >
               <span className="portal-case-item-top">
                 <small>
@@ -456,6 +513,12 @@ function CaseWorkspace({ demo, user }) {
               </span>
               <strong>{item.subject}</strong>
               <span>{item.patientLabel}</span>
+              {item.unreadMessages > 0 && (
+                <span className="portal-unread-badge">
+                  <i className="fas fa-envelope" /> {item.unreadMessages}{" "}
+                  {item.unreadMessages === 1 ? "mensaje nuevo" : "mensajes nuevos"}
+                </span>
+              )}
               <em
                 className={`portal-status portal-status--${item.status.toLowerCase()}`}
               >
@@ -489,6 +552,31 @@ function CaseWorkspace({ demo, user }) {
                   {statusLabels[detail.status]}
                 </em>
               </div>
+              <div className="portal-case-tabs" role="tablist" aria-label="Contenido del caso">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activePanel === "summary"}
+                  className={activePanel === "summary" ? "is-active" : ""}
+                  onClick={() => setActivePanel("summary")}
+                >
+                  <i className="fas fa-folder-open" /> Resumen y documentos
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activePanel === "messages"}
+                  className={activePanel === "messages" ? "is-active" : ""}
+                  onClick={() => openMessages()}
+                >
+                  <i className="fas fa-comments" /> Conversación con Kadima
+                  {detail.unreadMessages > 0 && (
+                    <span>{detail.unreadMessages}</span>
+                  )}
+                </button>
+              </div>
+              {activePanel === "summary" && (
+                <>
               <div className="portal-process">
                 <span className="is-done">Pedido médico</span>
                 <span
@@ -553,6 +641,21 @@ function CaseWorkspace({ demo, user }) {
                       aquí para continuar.
                     </p>
                     <form onSubmit={uploadAuthorization}>
+                      <label>
+                        Cotización elegida
+                        <select name="quoteId" required defaultValue="">
+                          <option value="" disabled>
+                            Seleccioná proveedor e importe
+                          </option>
+                          {detail.documents
+                            .filter((document) => document.kind === "QUOTE")
+                            .map((document) => (
+                              <option key={document.id} value={document.id}>
+                                {document.vendor} · ${Number(document.amount).toLocaleString("es-AR")}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
                       <input
                         name="file"
                         type="file"
@@ -566,8 +669,17 @@ function CaseWorkspace({ demo, user }) {
                   </div>
                 </div>
               )}
+                </>
+              )}
+              {activePanel === "messages" && (
               <div className="portal-detail-block">
-                <h4>Mensajes del caso</h4>
+                <div className="portal-conversation-heading">
+                  <div>
+                    <span className="portal-kicker">Canal privado del caso</span>
+                    <h4>Conversación con Kadima</h4>
+                  </div>
+                  <span><i className="fas fa-lock" /> Solo tu institución y Kadima</span>
+                </div>
                 <div className="portal-thread">
                   {detail.comments.length === 0 && (
                     <p className="portal-empty">Todavía no hay mensajes.</p>
@@ -599,10 +711,11 @@ function CaseWorkspace({ demo, user }) {
                     rows="3"
                   />
                   <button className="btn btn--primary" disabled={working}>
-                    Enviar mensaje
+                    <i className="fas fa-paper-plane" /> Enviar a Kadima
                   </button>
                 </form>
               </div>
+              )}
             </>
           )}
         </section>

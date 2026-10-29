@@ -371,9 +371,18 @@ router.get(
         createdAt: true,
         updatedAt: true,
         _count: { select: { documents: true, comments: true } },
+        comments: {
+          where: { authorRole: "KADIMA", readByClientAt: null },
+          select: { id: true },
+        },
       },
     });
-    res.json(cases.map(serializeCase));
+    res.json(
+      cases.map(({ comments, ...record }) => ({
+        ...serializeCase(record),
+        unreadMessages: comments.length,
+      })),
+    );
   }),
 );
 
@@ -429,6 +438,7 @@ router.post(
                   authorName: req.portalUser.name,
                   authorRole: "CLIENT",
                   body: encryptText(comment),
+                  readByClientAt: new Date(),
                 },
               },
             }
@@ -455,6 +465,8 @@ router.get(
           authorName: true,
           authorRole: true,
           body: true,
+          readByClientAt: true,
+          readByKadimaAt: true,
           createdAt: true,
         },
         orderBy: { createdAt: "asc" },
@@ -462,12 +474,35 @@ router.get(
       organization: { select: { id: true, name: true } },
     });
     if (!record) return res.status(404).json({ error: "Caso no encontrado." });
+    const unreadMessages = record.comments.filter(
+      (comment) =>
+        comment.authorRole === "KADIMA" && !comment.readByClientAt,
+    ).length;
+    if (req.query.markRead === "1" && unreadMessages) {
+      const readAt = new Date();
+      await prisma.caseComment.updateMany({
+        where: {
+          caseId: id,
+          authorRole: "KADIMA",
+          readByClientAt: null,
+        },
+        data: { readByClientAt: readAt },
+      });
+      record.comments = record.comments.map((comment) =>
+        comment.authorRole === "KADIMA"
+          ? { ...comment, readByClientAt: readAt }
+          : comment,
+      );
+    }
     if (!["QUOTES_READY", "AUTHORIZED", "CLOSED"].includes(record.status)) {
       record.documents = record.documents.filter(
         (document) => document.kind !== "QUOTE",
       );
     }
-    res.json(serializeCase(record));
+    res.json({
+      ...serializeCase(record),
+      unreadMessages: req.query.markRead === "1" ? 0 : unreadMessages,
+    });
   }),
 );
 
@@ -492,6 +527,7 @@ router.post(
         authorName: req.portalUser.name,
         authorRole: "CLIENT",
         body: encryptText(body),
+        readByClientAt: new Date(),
       },
     });
     await prisma.clientCase.update({
@@ -509,15 +545,25 @@ router.post(
   uploadOne,
   run(async (req, res) => {
     const id = Number(req.params.id);
-    if (!Number.isInteger(id) || !isAllowedFile(req.file)) {
+    const quoteId = Number(req.body?.quoteId);
+    if (
+      !Number.isInteger(id) ||
+      !Number.isInteger(quoteId) ||
+      !isAllowedFile(req.file)
+    ) {
       return res
         .status(400)
         .json({
           error:
-            "Adjuntá la autorización firmada en PDF, JPG o PNG (hasta 10 MB).",
+            "Elegí una cotización y adjuntá la autorización firmada en PDF, JPG o PNG (hasta 10 MB).",
         });
     }
-    const record = await clientCase(req, id);
+    const record = await clientCase(req, id, {
+      documents: {
+        where: { kind: "QUOTE" },
+        select: { id: true, vendor: true, amount: true },
+      },
+    });
     if (!record) return res.status(404).json({ error: "Caso no encontrado." });
     if (record.status !== "QUOTES_READY") {
       return res
@@ -526,6 +572,14 @@ router.post(
           error:
             "La autorización se carga después de recibir las tres cotizaciones.",
         });
+    }
+    const selectedQuote = record.documents.find(
+      (document) => document.id === quoteId,
+    );
+    if (!selectedQuote) {
+      return res
+        .status(400)
+        .json({ error: "Elegí una cotización válida para este caso." });
     }
     await prisma.$transaction(async (tx) => {
       await tx.caseDocument.create({
@@ -537,6 +591,8 @@ router.post(
           size: req.file.size,
           encryptedData: encryptFile(req.file.buffer),
           uploadedBy: req.portalUser.name,
+          vendor: selectedQuote.vendor,
+          amount: selectedQuote.amount,
         },
       });
       await tx.clientCase.update({

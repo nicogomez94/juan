@@ -543,6 +543,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
   const [selectedId, setSelectedId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [activePanel, setActivePanel] = useState("summary");
   const [createOrgOpen, setCreateOrgOpen] = useState(false);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   async function load() {
@@ -564,6 +565,18 @@ function AdminPortalClients({ error, setError, setNotice }) {
       request(`/cases/${selectedId}`)
         .then(setDetail)
         .catch((err) => setError(err.message));
+  }, [selectedId]);
+  useEffect(() => {
+    const interval = window.setInterval(async () => {
+      try {
+        const records = await request("/cases");
+        setCases(records);
+        if (selectedId) setDetail(await request(`/cases/${selectedId}`));
+      } catch {
+        // La próxima sincronización vuelve a intentarlo sin bloquear el panel.
+      }
+    }, 15000);
+    return () => window.clearInterval(interval);
   }, [selectedId]);
   async function act(fn, success) {
     setBusy(true);
@@ -635,6 +648,27 @@ function AdminPortalClients({ error, setError, setNotice }) {
     );
     form.reset();
   }
+  async function openConversation(caseId = selectedId) {
+    if (!caseId) return;
+    setSelectedId(caseId);
+    setActivePanel("messages");
+    try {
+      const record = await request(`/cases/${caseId}?markRead=1`);
+      setDetail(record);
+      setCases((current) =>
+        current.map((item) =>
+          item.id === caseId ? { ...item, unreadMessages: 0 } : item,
+        ),
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+  const unreadMessages = cases.reduce(
+    (total, item) => total + Number(item.unreadMessages || 0),
+    0,
+  );
+  const firstUnreadCase = cases.find((item) => item.unreadMessages > 0);
   return (
     <>
       <div className="admin-section-header">
@@ -652,6 +686,28 @@ function AdminPortalClients({ error, setError, setNotice }) {
           <Link className="portal-text-button" to="/portal-clientes" target="_blank">Ver portal</Link>
         </div>
       </div>
+      <section className="admin-message-inbox">
+        <span className="admin-message-inbox__icon">
+          <i className="fas fa-inbox" />
+        </span>
+        <div>
+          <span className="portal-kicker">Bandeja de entrada</span>
+          <h3>
+            {unreadMessages
+              ? `${unreadMessages} ${unreadMessages === 1 ? "mensaje nuevo" : "mensajes nuevos"}`
+              : "Mensajes al día"}
+          </h3>
+          <p>Las respuestas de cada obra social quedan guardadas dentro de su caso.</p>
+        </div>
+        {firstUnreadCase && (
+          <button
+            className="btn btn--primary"
+            onClick={() => openConversation(firstUnreadCase.id)}
+          >
+            Abrir conversación <i className="fas fa-arrow-right" />
+          </button>
+        )}
+      </section>
       <div className="admin-portal-grid admin-portal-grid--clients">
         <section className="admin-portal-card">
           <h3>Instituciones</h3>
@@ -733,7 +789,10 @@ function AdminPortalClients({ error, setError, setNotice }) {
             <button
               className={`portal-case-item ${selectedId === item.id ? "is-active" : ""}`}
               key={item.id}
-              onClick={() => setSelectedId(item.id)}
+              onClick={() => {
+                setSelectedId(item.id);
+                setActivePanel("summary");
+              }}
             >
               <span className="portal-case-item-top">
                 <small>
@@ -743,6 +802,12 @@ function AdminPortalClients({ error, setError, setNotice }) {
               </span>
               <strong>{item.subject}</strong>
               <span>{types[item.type]}</span>
+              {item.unreadMessages > 0 && (
+                <span className="portal-unread-badge">
+                  <i className="fas fa-envelope" /> {item.unreadMessages}{" "}
+                  {item.unreadMessages === 1 ? "mensaje nuevo" : "mensajes nuevos"}
+                </span>
+              )}
               <em
                 className={`portal-status portal-status--${item.status.toLowerCase()}`}
               >
@@ -772,6 +837,29 @@ function AdminPortalClients({ error, setError, setNotice }) {
                   {statuses[detail.status]}
                 </em>
               </div>
+              <div className="portal-case-tabs" role="tablist" aria-label="Gestión del caso">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activePanel === "summary"}
+                  className={activePanel === "summary" ? "is-active" : ""}
+                  onClick={() => setActivePanel("summary")}
+                >
+                  <i className="fas fa-folder-open" /> Documentos y circuito
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activePanel === "messages"}
+                  className={activePanel === "messages" ? "is-active" : ""}
+                  onClick={() => openConversation()}
+                >
+                  <i className="fas fa-comments" /> Conversación con el cliente
+                  {detail.unreadMessages > 0 && <span>{detail.unreadMessages}</span>}
+                </button>
+              </div>
+              {activePanel === "summary" && (
+                <>
               <h4>Documentos</h4>
               {detail.documents.map((doc) => (
                 <div className="portal-document" key={doc.id}>
@@ -890,9 +978,21 @@ function AdminPortalClients({ error, setError, setNotice }) {
                   Cerrar caso
                 </button>
               )}
+                </>
+              )}
+              {activePanel === "messages" && (
               <div className="portal-detail-block">
-                <h4>Mensajes</h4>
+                <div className="portal-conversation-heading">
+                  <div>
+                    <span className="portal-kicker">Canal privado del caso</span>
+                    <h4>Conversación con {detail.organization.name}</h4>
+                  </div>
+                  <span><i className="fas fa-arrows-rotate" /> Sincronización automática</span>
+                </div>
                 <div className="portal-thread">
+                  {detail.comments.length === 0 && (
+                    <p className="portal-empty">Todavía no hay mensajes en este caso.</p>
+                  )}
                   {detail.comments.map((item) => (
                     <div
                       className={`portal-message ${item.authorRole === "KADIMA" ? "portal-message--kadima" : ""}`}
@@ -918,10 +1018,11 @@ function AdminPortalClients({ error, setError, setNotice }) {
                     rows="3"
                   />
                   <button className="btn btn--primary" disabled={busy}>
-                    Enviar mensaje
+                    <i className="fas fa-paper-plane" /> Enviar al cliente
                   </button>
                 </form>
               </div>
+              )}
             </>
           )}
         </section>

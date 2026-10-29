@@ -626,6 +626,18 @@
   color: #71838a;
   font-size: 12px;
 }
+.portal-case-item .portal-unread-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #fff2d8;
+  color: #8b5b05;
+  font-weight: 800;
+}
 .portal-status {
   display: inline-block;
   width: fit-content;
@@ -659,6 +671,47 @@
   margin: 0;
   color: #687c84;
   font-size: 13px;
+}
+.portal-case-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 18px 0 6px;
+  padding: 5px;
+  border: 1px solid #dce8ea;
+  border-radius: 14px;
+  background: #f3f7f8;
+}
+.portal-case-tabs button {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #607980;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.portal-case-tabs button:hover,
+.portal-case-tabs button.is-active {
+  background: #fff;
+  color: #087b81;
+  box-shadow: 0 5px 18px rgba(22, 57, 75, 0.08);
+}
+.portal-case-tabs button > span {
+  display: grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 999px;
+  background: #ef9f22;
+  color: #fff;
+  font-size: 10px;
 }
 .portal-process {
   display: flex;
@@ -781,10 +834,42 @@
   flex: 1;
   min-width: 180px;
 }
+.portal-authorization label {
+  display: grid;
+  flex: 1 1 230px;
+  gap: 6px;
+  color: #4f6a73;
+  font-size: 12px;
+  font-weight: 800;
+}
+.portal-authorization select {
+  width: 100%;
+}
 .portal-thread {
   display: grid;
   gap: 11px;
+  max-height: 430px;
+  overflow-y: auto;
+  padding: 4px 5px 8px 0;
   margin-bottom: 15px;
+}
+.portal-conversation-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.portal-conversation-heading h4 {
+  margin: 4px 0 0;
+}
+.portal-conversation-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #71858c;
+  font-size: 11px;
+  font-weight: 700;
 }
 .portal-message {
   border: 1px solid #e2eaeb;
@@ -1041,7 +1126,7 @@
 
 .portal-client-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -1096,6 +1181,11 @@
   color: #ab6d05;
 }
 
+.portal-client-metric-icon--action {
+  background: #e8eef8;
+  color: #315f91;
+}
+
 .portal-client-metric-icon--done {
   background: #e7f4e9;
   color: #3f8150;
@@ -1105,6 +1195,37 @@
 .admin-portals-page {
   display: grid;
   gap: 20px;
+}
+.admin-message-inbox {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  border: 1px solid #bcdedb;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(50, 195, 188, 0.16), transparent 24%),
+    linear-gradient(135deg, #f4fbfa, #fff);
+  box-shadow: 0 12px 30px rgba(20, 65, 78, 0.06);
+}
+.admin-message-inbox__icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 15px;
+  background: #087b81;
+  color: #fff;
+  font-size: 20px;
+}
+.admin-message-inbox h3 {
+  margin: 3px 0;
+  color: #17394b;
+  font-size: 22px;
+}
+.admin-message-inbox p {
+  margin: 0;
 }
 .admin-portal-grid {
   display: grid;
@@ -1246,6 +1367,26 @@
   align-items: start;
 }
 
+.admin-portal-grid--clients .admin-simple-list > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.admin-portal-grid--clients .admin-simple-list strong,
+.admin-portal-grid--clients .admin-simple-list small {
+  grid-column: 1;
+}
+
+.admin-portal-grid--clients .admin-simple-list > div > button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.admin-portal-grid--clients .admin-inline-editor {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 980px) {
   .portal-workspace-grid,
   .portal-case-layout,
@@ -1267,7 +1408,7 @@
     grid-template-columns: 1fr;
   }
   .portal-client-metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1394,11 +1535,31 @@
   .portal-client-metrics article {
     grid-template-columns: 44px 1fr;
   }
+  .portal-client-metrics {
+    grid-template-columns: 1fr;
+  }
   .portal-client-metrics small {
     display: none;
   }
   .admin-section-actions {
     justify-content: flex-start;
+  }
+  .admin-message-inbox {
+    grid-template-columns: auto 1fr;
+    padding: 17px;
+  }
+  .admin-message-inbox .btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .portal-case-tabs {
+    grid-template-columns: 1fr;
+  }
+  .portal-conversation-heading {
+    display: block;
+  }
+  .portal-conversation-heading > span {
+    margin-top: 8px;
   }
   .portal-message {
     max-width: 100%;

@@ -154,15 +154,20 @@ model CaseDocument {
 }
 
 model CaseComment {
-  id         Int         @id @default(autoincrement())
-  caseId     Int
-  authorId   Int?
-  authorName String
-  authorRole String
-  body       String
-  case       ClientCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  author     PortalUser? @relation(fields: [authorId], references: [id])
-  createdAt  DateTime    @default(now())
+  id              Int         @id @default(autoincrement())
+  caseId          Int
+  authorId        Int?
+  authorName      String
+  authorRole      String
+  body            String
+  readByClientAt  DateTime?
+  readByKadimaAt  DateTime?
+  case            ClientCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author          PortalUser? @relation(fields: [authorId], references: [id])
+  createdAt       DateTime    @default(now())
+
+  @@index([caseId, authorRole, readByClientAt])
+  @@index([caseId, authorRole, readByKadimaAt])
 }
 
 model Equipo {

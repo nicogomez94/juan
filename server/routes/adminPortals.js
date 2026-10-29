@@ -73,7 +73,7 @@ router.use(unavailable, authMiddleware);
 router.get(
   "/summary",
   run(async (req, res) => {
-    const [students, clients, organizations, cases, pending] =
+    const [students, clients, organizations, cases, pending, unreadMessages] =
       await Promise.all([
         prisma.portalUser.count({ where: { role: "STUDENT" } }),
         prisma.portalUser.count({ where: { role: "CLIENT" } }),
@@ -82,8 +82,18 @@ router.get(
         prisma.clientCase.count({
           where: { status: { in: ["REQUESTED", "QUOTING"] } },
         }),
+        prisma.caseComment.count({
+          where: { authorRole: "CLIENT", readByKadimaAt: null },
+        }),
       ]);
-    res.json({ students, clients, organizations, cases, pending });
+    res.json({
+      students,
+      clients,
+      organizations,
+      cases,
+      pending,
+      unreadMessages,
+    });
   }),
 );
 
@@ -488,13 +498,18 @@ router.get(
       include: {
         organization: { select: { id: true, name: true } },
         _count: { select: { documents: true, comments: true } },
+        comments: {
+          where: { authorRole: "CLIENT", readByKadimaAt: null },
+          select: { id: true },
+        },
       },
     });
     res.json(
-      cases.map((record) => ({
+      cases.map(({ comments, ...record }) => ({
         ...record,
         subject: decryptText(record.subject),
         patientLabel: decryptText(record.patientLabel),
+        unreadMessages: comments.length,
       })),
     );
   }),
@@ -517,6 +532,8 @@ router.get(
             authorName: true,
             authorRole: true,
             body: true,
+            readByClientAt: true,
+            readByKadimaAt: true,
             createdAt: true,
           },
           orderBy: { createdAt: "asc" },
@@ -524,6 +541,26 @@ router.get(
       },
     });
     if (!record) return res.status(404).json({ error: "Caso no encontrado." });
+    const unreadMessages = record.comments.filter(
+      (comment) =>
+        comment.authorRole === "CLIENT" && !comment.readByKadimaAt,
+    ).length;
+    if (req.query.markRead === "1" && unreadMessages) {
+      const readAt = new Date();
+      await prisma.caseComment.updateMany({
+        where: {
+          caseId: id,
+          authorRole: "CLIENT",
+          readByKadimaAt: null,
+        },
+        data: { readByKadimaAt: readAt },
+      });
+      record.comments = record.comments.map((comment) =>
+        comment.authorRole === "CLIENT"
+          ? { ...comment, readByKadimaAt: readAt }
+          : comment,
+      );
+    }
     res.json({
       ...record,
       subject: decryptText(record.subject),
@@ -536,6 +573,7 @@ router.get(
         ...comment,
         body: decryptText(comment.body),
       })),
+      unreadMessages: req.query.markRead === "1" ? 0 : unreadMessages,
     });
   }),
 );
@@ -674,6 +712,7 @@ router.post(
         authorName: req.admin.username,
         authorRole: "KADIMA",
         body: encryptText(body),
+        readByKadimaAt: new Date(),
       },
     });
     await prisma.clientCase.update({
