@@ -7,7 +7,7 @@ Con `npm run dev`, el interruptor **Modo debug** aparece abajo a la izquierda y 
 ## Funciones
 
 - **Estudiantes:** acceso individual, cursos asignados, módulos, fechas de encuentro, enlaces HTTPS de Zoom/Meet, bibliografía privada y avance.
-- **Clientes:** acceso individual vinculado a una obra social o prepaga; creación de casos de medicamentos o prótesis con pedido médico; mensajes por caso; publicación conjunta de tres cotizaciones; descarga; carga de autorización firmada; cierre por administración.
+- **Clientes:** registro de obra social o prepaga con su primer referente; acceso individual; edición de datos personales e institucionales desde **Mi cuenta**; creación de casos de medicamentos o prótesis mediante modal con pedido médico; mensajes por caso; publicación conjunta de tres cotizaciones; descarga; carga de autorización firmada; cierre por administración.
 - **Administración:** alta y bloqueo de instituciones y usuarios, cambio de credenciales, asignación de cursos, gestión de módulos y bibliografía, seguimiento de casos, cotizaciones y respuestas.
 
 ## Configuración

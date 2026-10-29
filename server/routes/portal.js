@@ -85,6 +85,19 @@ function clientCase(req, id, include = {}) {
   });
 }
 
+function clean(value, max = 160) {
+  return String(value || "").trim().slice(0, max);
+}
+
+function setPortalSession(res, user) {
+  const token = jwt.sign(
+    { sub: user.id, role: user.role, scope: "portal" },
+    JWT_SECRET,
+    { expiresIn: "8h" },
+  );
+  res.cookie(COOKIE_NAME, token, sessionCookieOptions());
+}
+
 router.get("/status", (req, res) => res.json({ available: portalConfigured }));
 router.use(unavailable);
 
@@ -113,6 +126,66 @@ router.use((req, res, next) => {
 });
 
 router.post(
+  "/register-client",
+  run(async (req, res) => {
+    const organizationName = clean(req.body?.organizationName, 140);
+    const taxId = clean(req.body?.taxId, 20).replace(/[^0-9-]/g, "");
+    const organizationPhone = clean(req.body?.organizationPhone, 40);
+    const address = clean(req.body?.address, 180);
+    const name = clean(req.body?.name, 120);
+    const position = clean(req.body?.position, 80);
+    const phone = clean(req.body?.phone, 40);
+    const email = clean(req.body?.email, 180).toLowerCase();
+    const password = String(req.body?.password || "");
+    if (
+      organizationName.length < 3 ||
+      taxId.length < 8 ||
+      name.length < 3 ||
+      !/^\S+@\S+\.\S+$/.test(email) ||
+      password.length < 10
+    ) {
+      return res.status(400).json({
+        error: "Completá los datos de la institución y usá una contraseña de al menos 10 caracteres.",
+      });
+    }
+    const passwordHash = await bcrypt.hash(password, 12);
+    try {
+      const user = await prisma.$transaction(async (tx) => {
+        const organization = await tx.clientOrganization.create({
+          data: {
+            name: organizationName,
+            taxId,
+            phone: organizationPhone || null,
+            address: address || null,
+          },
+        });
+        return tx.portalUser.create({
+          data: {
+            name,
+            email,
+            phone: phone || null,
+            position: position || null,
+            passwordHash,
+            role: "CLIENT",
+            organizationId: organization.id,
+          },
+          include: { organization: true },
+        });
+      });
+      setPortalSession(res, user);
+      res.status(201).json({ user: publicUser(user) });
+    } catch (error) {
+      if (error?.code === "P2002") {
+        return res.status(409).json({
+          error: "Ya existe una cuenta con ese correo o una institución con ese CUIT.",
+        });
+      }
+      throw error;
+    }
+  }),
+);
+
+router.post(
   "/login",
   run(async (req, res) => {
     const email = String(req.body?.email || "")
@@ -130,9 +203,7 @@ router.post(
     }
     const user = await prisma.portalUser.findUnique({
       where: { email },
-      include: {
-        organization: { select: { id: true, name: true, active: true } },
-      },
+      include: { organization: true },
     });
     const valid =
       user &&
@@ -147,12 +218,7 @@ router.post(
         .json({ error: "Usuario o contraseña incorrectos." });
     }
     attempts.delete(attemptKey);
-    const token = jwt.sign(
-      { sub: user.id, role: user.role, scope: "portal" },
-      JWT_SECRET,
-      { expiresIn: "8h" },
-    );
-    res.cookie(COOKIE_NAME, token, sessionCookieOptions());
+    setPortalSession(res, user);
     res.json({ user: publicUser(user) });
   }),
 );
@@ -167,6 +233,46 @@ router.post("/logout", (req, res) => {
 
 router.get("/me", portalAuth, (req, res) =>
   res.json({ user: publicUser(req.portalUser) }),
+);
+
+router.put(
+  "/me",
+  portalAuth,
+  run(async (req, res) => {
+    const name = clean(req.body?.name, 120);
+    const phone = clean(req.body?.phone, 40);
+    const position = clean(req.body?.position, 80);
+    const organizationName = clean(req.body?.organizationName, 140);
+    const organizationPhone = clean(req.body?.organizationPhone, 40);
+    const address = clean(req.body?.address, 180);
+    if (
+      name.length < 3 ||
+      (req.portalUser.role === "CLIENT" && organizationName.length < 3)
+    ) {
+      return res.status(400).json({ error: "Revisá el nombre y la institución." });
+    }
+    await prisma.$transaction(async (tx) => {
+      await tx.portalUser.update({
+        where: { id: req.portalUser.id },
+        data: { name, phone: phone || null, position: position || null },
+      });
+      if (req.portalUser.role === "CLIENT" && req.portalUser.organizationId) {
+        await tx.clientOrganization.update({
+          where: { id: req.portalUser.organizationId },
+          data: {
+            name: organizationName,
+            phone: organizationPhone || null,
+            address: address || null,
+          },
+        });
+      }
+    });
+    const user = await prisma.portalUser.findUnique({
+      where: { id: req.portalUser.id },
+      include: { organization: true },
+    });
+    res.json({ user: publicUser(user) });
+  }),
 );
 
 router.get(

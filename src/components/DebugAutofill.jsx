@@ -32,6 +32,12 @@ function valueFor(field, form) {
   if (field.type === 'url' || name === 'meetingUrl') return 'https://meet.google.com/'
   if (field.type === 'number') return name === 'amount' ? '245000' : '1'
   if (name === 'password') return field.required ? samplePassword : null
+  if (name === 'organizationName') return 'Obra Social Horizonte'
+  if (name === 'taxId') return '30-71234567-8'
+  if (name === 'organizationPhone') return '+54 11 4000-1200'
+  if (name === 'address') return 'Av. Corrientes 1240, CABA'
+  if (name === 'position') return 'Responsable de prestaciones'
+  if (name === 'phone') return '+54 9 11 5555-0190'
   if (name === 'patientLabel') return 'Afiliado de prueba · 0042'
   if (name === 'subject') return 'Solicitud de cobertura de prueba'
   if (name === 'vendor') return 'Proveedor de prueba'

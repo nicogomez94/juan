@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PortalShell from "../components/PortalShell";
+import PortalModal from "../components/PortalModal";
 import {
   downloadExample,
   downloadLocalFile,
@@ -295,13 +296,23 @@ function CaseWorkspace({ demo, user }) {
     }
   }
 
+  const activeCases = cases.filter((item) => item.status !== "CLOSED").length;
+  const pendingActions = cases.filter((item) =>
+    ["QUOTES_READY", "AUTHORIZED"].includes(item.status),
+  ).length;
+  const closedCases = cases.filter((item) => item.status === "CLOSED").length;
+
   return (
     <>
       <div className="portal-client-intro">
-        <p>
-          Consultá tus solicitudes de medicamentos y prótesis, intercambiá
-          mensajes con Kadima y completá cada caso con su documentación.
-        </p>
+        <div>
+          <span className="portal-kicker">Centro de gestión</span>
+          <h3>Solicitudes y documentación</h3>
+          <p>
+            Seguimiento de medicamentos y prótesis, cotizaciones y autorizaciones
+            en un único circuito.
+          </p>
+        </div>
         <button
           className="btn btn--primary"
           onClick={() => {
@@ -311,6 +322,23 @@ function CaseWorkspace({ demo, user }) {
         >
           <i className="fas fa-plus" /> Nuevo caso
         </button>
+      </div>
+      <div className="portal-client-metrics" aria-label="Resumen de casos">
+        <article>
+          <span className="portal-client-metric-icon"><i className="fas fa-folder-open" /></span>
+          <div><strong>{activeCases}</strong><span>Casos activos</span></div>
+          <small>En seguimiento</small>
+        </article>
+        <article>
+          <span className="portal-client-metric-icon portal-client-metric-icon--alert"><i className="fas fa-bell" /></span>
+          <div><strong>{pendingActions}</strong><span>Requieren atención</span></div>
+          <small>Revisar ahora</small>
+        </article>
+        <article>
+          <span className="portal-client-metric-icon portal-client-metric-icon--done"><i className="fas fa-circle-check" /></span>
+          <div><strong>{closedCases}</strong><span>Casos cerrados</span></div>
+          <small>Historial</small>
+        </article>
       </div>
       {error && (
         <p className="portal-error" role="alert">
@@ -322,16 +350,20 @@ function CaseWorkspace({ demo, user }) {
           {notice}
         </p>
       )}
-      {creating && (
+      <PortalModal
+        open={creating}
+        onClose={() => setCreating(false)}
+        eyebrow="Solicitud nueva"
+        title="Crear un caso"
+        wide
+      >
         <form
-          className="portal-section-card portal-create-form"
+          className="portal-create-form"
           onSubmit={createCase}
         >
-          <div className="portal-section-heading">
-            <div>
-              <span className="portal-kicker">Solicitud nueva</span>
-              <h3>Crear un caso</h3>
-            </div>
+          <div className="portal-new-case-note">
+            <i className="fas fa-shield-heart" />
+            <p>Cada pedido genera un caso independiente y queda vinculado a <strong>{user?.organization?.name || "tu institución"}</strong>.</p>
           </div>
           <div className="portal-form-grid">
             <label>
@@ -393,7 +425,7 @@ function CaseWorkspace({ demo, user }) {
             </button>
           </div>
         </form>
-      )}
+      </PortalModal>
       <div className="portal-case-layout">
         <aside className="portal-section-card portal-case-list">
           <div className="portal-section-heading">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { adminPortalRequest, downloadPrivate } from "../lib/portalApi";
+import PortalModal from "../components/PortalModal";
 import "../portal.css";
 
 const request = (path, method = "GET", data) =>
@@ -542,6 +543,8 @@ function AdminPortalClients({ error, setError, setNotice }) {
   const [selectedId, setSelectedId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [createOrgOpen, setCreateOrgOpen] = useState(false);
+  const [createUserOpen, setCreateUserOpen] = useState(false);
   async function load() {
     const [orgs, accounts, records] = await Promise.all([
       request("/organizations"),
@@ -570,8 +573,10 @@ function AdminPortalClients({ error, setError, setNotice }) {
       await load();
       if (selectedId) setDetail(await request(`/cases/${selectedId}`));
       setNotice(success);
+      return true;
     } catch (err) {
       setError(err.message);
+      return false;
     } finally {
       setBusy(false);
     }
@@ -579,20 +584,23 @@ function AdminPortalClients({ error, setError, setNotice }) {
   async function createOrganization(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    await act(
+    const created = await act(
       () =>
         request("/organizations", "POST", {
           name: new FormData(form).get("name"),
         }),
       "Institución creada.",
     );
-    form.reset();
+    if (created) {
+      form.reset();
+      setCreateOrgOpen(false);
+    }
   }
   async function createUser(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form));
-    await act(
+    const created = await act(
       () =>
         request("/users", "POST", {
           ...data,
@@ -601,7 +609,10 @@ function AdminPortalClients({ error, setError, setNotice }) {
         }),
       "Acceso de cliente creado.",
     );
-    form.reset();
+    if (created) {
+      form.reset();
+      setCreateUserOpen(false);
+    }
   }
   async function quote(event) {
     event.preventDefault();
@@ -631,31 +642,19 @@ function AdminPortalClients({ error, setError, setNotice }) {
           <h2>Portal de clientes</h2>
           <p>Instituciones, accesos y casos de medicamentos y prótesis.</p>
         </div>
-        <Link
-          className="btn btn--primary"
-          to="/portal-clientes"
-          target="_blank"
-        >
-          Ver portal
-        </Link>
+        <div className="admin-section-actions">
+          <button className="btn btn--outline" onClick={() => setCreateOrgOpen(true)}>
+            <i className="fas fa-building-circle-check" /> Nueva institución
+          </button>
+          <button className="btn btn--primary" onClick={() => setCreateUserOpen(true)}>
+            <i className="fas fa-user-plus" /> Nuevo acceso
+          </button>
+          <Link className="portal-text-button" to="/portal-clientes" target="_blank">Ver portal</Link>
+        </div>
       </div>
-      <div className="admin-portal-grid">
+      <div className="admin-portal-grid admin-portal-grid--clients">
         <section className="admin-portal-card">
           <h3>Instituciones</h3>
-          <form
-            className="admin-portal-form admin-portal-form--row"
-            onSubmit={createOrganization}
-          >
-            <input
-              name="name"
-              placeholder="Obra social o prepaga"
-              minLength="3"
-              required
-            />
-            <button className="btn btn--primary" disabled={busy}>
-              Agregar
-            </button>
-          </form>
           <div className="admin-simple-list">
             {organizations.map((org) => (
               <div key={org.id}>
@@ -683,40 +682,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
           </div>
         </section>
         <section className="admin-portal-card">
-          <h3>Crear acceso institucional</h3>
-          <form className="admin-portal-form" onSubmit={createUser}>
-            <input
-              name="name"
-              placeholder="Nombre y apellido"
-              minLength="3"
-              required
-            />
-            <input name="email" type="email" placeholder="Email" required />
-            <input
-              name="password"
-              type="password"
-              minLength="10"
-              placeholder="Contraseña inicial · mínimo 10 caracteres"
-              required
-            />
-            <select name="organizationId" required>
-              <option value="">Elegí institución</option>
-              {organizations
-                .filter((org) => org.active)
-                .map((org) => (
-                  <option key={org.id} value={org.id}>
-                    {org.name}
-                  </option>
-                ))}
-            </select>
-            <button className="btn btn--primary" disabled={busy}>
-              Crear acceso
-            </button>
-          </form>
-        </section>
-      </div>
-      <section className="admin-portal-card">
-        <h3>Usuarios de clientes</h3>
+          <h3>Usuarios de clientes</h3>
         <div className="admin-simple-list">
           {users.length === 0 && <p>No hay accesos cargados.</p>}
           {users.map((user) => (
@@ -751,7 +717,8 @@ function AdminPortalClients({ error, setError, setNotice }) {
             </div>
           ))}
         </div>
-      </section>
+        </section>
+      </div>
       <div className="admin-case-layout">
         <section className="admin-portal-card">
           <div className="portal-section-heading">
@@ -959,6 +926,27 @@ function AdminPortalClients({ error, setError, setNotice }) {
           )}
         </section>
       </div>
+      <PortalModal open={createOrgOpen} onClose={() => setCreateOrgOpen(false)} eyebrow="Clientes" title="Nueva institución">
+        <form className="portal-modal-form" onSubmit={createOrganization}>
+          <label>Obra social o prepaga<input name="name" placeholder="Nombre institucional" minLength="3" required /></label>
+          <div className="portal-form-actions">
+            <button type="button" className="portal-text-button" onClick={() => setCreateOrgOpen(false)}>Cancelar</button>
+            <button className="btn btn--primary" disabled={busy}>{busy ? "Guardando…" : "Agregar institución"}</button>
+          </div>
+        </form>
+      </PortalModal>
+      <PortalModal open={createUserOpen} onClose={() => setCreateUserOpen(false)} eyebrow="Acceso institucional" title="Nuevo usuario">
+        <form className="portal-modal-form" onSubmit={createUser}>
+          <label>Nombre y apellido<input name="name" minLength="3" required /></label>
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Contraseña inicial<input name="password" type="password" minLength="10" required /></label>
+          <label>Institución<select name="organizationId" required><option value="">Elegí institución</option>{organizations.filter((org) => org.active).map((org) => <option key={org.id} value={org.id}>{org.name}</option>)}</select></label>
+          <div className="portal-form-actions">
+            <button type="button" className="portal-text-button" onClick={() => setCreateUserOpen(false)}>Cancelar</button>
+            <button className="btn btn--primary" disabled={busy}>{busy ? "Creando…" : "Crear acceso"}</button>
+          </div>
+        </form>
+      </PortalModal>
     </>
   );
 }

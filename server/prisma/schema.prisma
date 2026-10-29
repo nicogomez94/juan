@@ -51,19 +51,24 @@ enum CaseDocumentKind {
 }
 
 model ClientOrganization {
-  id        Int          @id @default(autoincrement())
-  name      String
-  active    Boolean      @default(true)
-  users     PortalUser[]
-  cases     ClientCase[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id           Int          @id @default(autoincrement())
+  name         String
+  taxId        String?      @unique
+  phone        String?
+  address      String?
+  active       Boolean      @default(true)
+  users        PortalUser[]
+  cases        ClientCase[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model PortalUser {
   id             Int                 @id @default(autoincrement())
   email          String              @unique
   name           String
+  phone          String?
+  position       String?
   passwordHash   String
   role           PortalRole
   active         Boolean             @default(true)

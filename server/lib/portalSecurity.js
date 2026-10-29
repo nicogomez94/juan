@@ -49,7 +49,16 @@ async function portalAuth(req, res, next) {
     const user = await prisma.portalUser.findUnique({
       where: { id: claims.sub },
       include: {
-        organization: { select: { id: true, name: true, active: true } },
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            taxId: true,
+            phone: true,
+            address: true,
+            active: true,
+          },
+        },
       },
     });
     if (
@@ -173,9 +182,17 @@ function publicUser(user) {
     id: user.id,
     name: user.name,
     email: user.email,
+    phone: user.phone || "",
+    position: user.position || "",
     role: user.role,
     organization: user.organization
-      ? { id: user.organization.id, name: user.organization.name }
+      ? {
+          id: user.organization.id,
+          name: user.organization.name,
+          taxId: user.organization.taxId || "",
+          phone: user.organization.phone || "",
+          address: user.organization.address || "",
+        }
       : null,
   };
 }
