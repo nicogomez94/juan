@@ -6,7 +6,7 @@ import PortalModal from "./PortalModal";
 import { portalRequest } from "../lib/portalApi";
 import "../portal.css";
 
-export default function PortalShell({ role, title, eyebrow, intro, children }) {
+export default function PortalShell({ role, title, children }) {
   const [session, setSession] = useState(null);
   const [mode, setMode] = useState("loading");
   const [error, setError] = useState("");
@@ -139,16 +139,7 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
   return (
     <>
       <Navbar />
-      <section className={`page-hero portal-hero portal-hero--private ${mode === "live" || mode === "sample" ? "portal-hero--compact" : ""}`}>
-        <div className="container page-hero__inner">
-          <p className="section-header__tag section-header__tag--light">
-            {eyebrow}
-          </p>
-          <h1>{title}</h1>
-          <p>{intro}</p>
-        </div>
-      </section>
-      <main className="portal-workspace">
+      <main className="portal-workspace portal-workspace--standalone">
         <div className="container">
           {mode === "loading" && (
             <p className="portal-state">Cargando portal…</p>
@@ -156,7 +147,7 @@ export default function PortalShell({ role, title, eyebrow, intro, children }) {
           {mode === "login" && (
             <div className="portal-login-layout">
               <div className="portal-login-copy">
-                <span className="portal-kicker">Acceso personalizado</span>
+                <span className="portal-kicker">{title}</span>
                 <h2>Tu espacio en Kadima</h2>
                 <p>
                   Ingresá con las credenciales que te asignó el equipo de

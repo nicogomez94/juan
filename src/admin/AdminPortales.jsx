@@ -543,7 +543,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
   const [selectedId, setSelectedId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [activePanel, setActivePanel] = useState("summary");
+  const [conversationOpen, setConversationOpen] = useState(false);
   const [createOrgOpen, setCreateOrgOpen] = useState(false);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   async function load() {
@@ -651,7 +651,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
   async function openConversation(caseId = selectedId) {
     if (!caseId) return;
     setSelectedId(caseId);
-    setActivePanel("messages");
+    setConversationOpen(true);
     try {
       const record = await request(`/cases/${caseId}?markRead=1`);
       setDetail(record);
@@ -660,6 +660,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
           item.id === caseId ? { ...item, unreadMessages: 0 } : item,
         ),
       );
+      window.dispatchEvent(new Event("kadima:portal-notifications"));
     } catch (err) {
       setError(err.message);
     }
@@ -791,7 +792,7 @@ function AdminPortalClients({ error, setError, setNotice }) {
               key={item.id}
               onClick={() => {
                 setSelectedId(item.id);
-                setActivePanel("summary");
+                setConversationOpen(false);
               }}
             >
               <span className="portal-case-item-top">
@@ -831,35 +832,20 @@ function AdminPortalClients({ error, setError, setNotice }) {
                     {detail.patientLabel} · {types[detail.type]}
                   </p>
                 </div>
+                <button
+                  type="button"
+                  className="portal-conversation-trigger"
+                  onClick={() => openConversation()}
+                >
+                  <i className="fas fa-comments" /> Mensajes
+                  {detail.unreadMessages > 0 && <span>{detail.unreadMessages}</span>}
+                </button>
                 <em
                   className={`portal-status portal-status--${detail.status.toLowerCase()}`}
                 >
                   {statuses[detail.status]}
                 </em>
               </div>
-              <div className="portal-case-tabs" role="tablist" aria-label="Gestión del caso">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activePanel === "summary"}
-                  className={activePanel === "summary" ? "is-active" : ""}
-                  onClick={() => setActivePanel("summary")}
-                >
-                  <i className="fas fa-folder-open" /> Documentos y circuito
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activePanel === "messages"}
-                  className={activePanel === "messages" ? "is-active" : ""}
-                  onClick={() => openConversation()}
-                >
-                  <i className="fas fa-comments" /> Conversación con el cliente
-                  {detail.unreadMessages > 0 && <span>{detail.unreadMessages}</span>}
-                </button>
-              </div>
-              {activePanel === "summary" && (
-                <>
               <h4>Documentos</h4>
               {detail.documents.map((doc) => (
                 <div className="portal-document" key={doc.id}>
@@ -978,55 +964,61 @@ function AdminPortalClients({ error, setError, setNotice }) {
                   Cerrar caso
                 </button>
               )}
-                </>
-              )}
-              {activePanel === "messages" && (
-              <div className="portal-detail-block">
-                <div className="portal-conversation-heading">
-                  <div>
-                    <span className="portal-kicker">Canal privado del caso</span>
-                    <h4>Conversación con {detail.organization.name}</h4>
-                  </div>
-                  <span><i className="fas fa-arrows-rotate" /> Sincronización automática</span>
-                </div>
-                <div className="portal-thread">
-                  {detail.comments.length === 0 && (
-                    <p className="portal-empty">Todavía no hay mensajes en este caso.</p>
-                  )}
-                  {detail.comments.map((item) => (
-                    <div
-                      className={`portal-message ${item.authorRole === "KADIMA" ? "portal-message--kadima" : ""}`}
-                      key={item.id}
-                    >
-                      <div>
-                        <strong>{item.authorName}</strong>
-                        <time>
-                          {new Date(item.createdAt).toLocaleString("es-AR")}
-                        </time>
-                      </div>
-                      <p>{item.body}</p>
-                    </div>
-                  ))}
-                </div>
-                <form className="portal-comment-form" onSubmit={comment}>
-                  <textarea
-                    name="body"
-                    placeholder="Responder al cliente…"
-                    minLength="2"
-                    maxLength="2000"
-                    required
-                    rows="3"
-                  />
-                  <button className="btn btn--primary" disabled={busy}>
-                    <i className="fas fa-paper-plane" /> Enviar al cliente
-                  </button>
-                </form>
-              </div>
-              )}
             </>
           )}
         </section>
       </div>
+      <PortalModal
+        open={conversationOpen && Boolean(detail)}
+        onClose={() => setConversationOpen(false)}
+        eyebrow={`Caso #${detail?.id || ""}`}
+        title={`Conversación con ${detail?.organization?.name || "el cliente"}`}
+        wide
+      >
+        {detail && (
+          <div className="portal-conversation-modal">
+            <div className="portal-conversation-heading">
+              <div>
+                <strong>{detail.subject}</strong>
+                <span>{detail.patientLabel}</span>
+              </div>
+              <span>
+                <i className="fas fa-arrows-rotate" /> Sincronización automática
+              </span>
+            </div>
+            <div className="portal-thread">
+              {detail.comments.length === 0 && (
+                <p className="portal-empty">Todavía no hay mensajes en este caso.</p>
+              )}
+              {detail.comments.map((item) => (
+                <div
+                  className={`portal-message ${item.authorRole === "KADIMA" ? "portal-message--kadima" : ""}`}
+                  key={item.id}
+                >
+                  <div>
+                    <strong>{item.authorName}</strong>
+                    <time>{new Date(item.createdAt).toLocaleString("es-AR")}</time>
+                  </div>
+                  <p>{item.body}</p>
+                </div>
+              ))}
+            </div>
+            <form className="portal-comment-form" onSubmit={comment}>
+              <textarea
+                name="body"
+                placeholder="Responder al cliente…"
+                minLength="2"
+                maxLength="2000"
+                required
+                rows="3"
+              />
+              <button className="btn btn--primary" disabled={busy}>
+                <i className="fas fa-paper-plane" /> Enviar al cliente
+              </button>
+            </form>
+          </div>
+        )}
+      </PortalModal>
       <PortalModal open={createOrgOpen} onClose={() => setCreateOrgOpen(false)} eyebrow="Clientes" title="Nueva institución">
         <form className="portal-modal-form" onSubmit={createOrganization}>
           <label>Obra social o prepaga<input name="name" placeholder="Nombre institucional" minLength="3" required /></label>

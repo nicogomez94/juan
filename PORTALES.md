@@ -7,10 +7,10 @@ Con `npm run dev`, el interruptor **Modo debug** aparece abajo a la izquierda y 
 ## Funciones
 
 - **Estudiantes:** acceso individual, cursos asignados, módulos, fechas de encuentro, enlaces HTTPS de Zoom/Meet, bibliografía privada y avance.
-- **Clientes:** registro de obra social o prepaga con su primer referente; acceso individual; edición de datos personales e institucionales desde **Mi cuenta**; creación de casos de medicamentos o prótesis mediante modal con pedido médico; conversación privada por caso con mensajes sin leer; publicación conjunta de tres cotizaciones; descarga y selección de la cotización elegida; carga de autorización firmada; cierre por administración.
-- **Administración:** alta y bloqueo de instituciones y usuarios, cambio de credenciales, asignación de cursos, gestión de módulos y bibliografía, bandeja de mensajes recibidos, seguimiento de casos, descarga del pedido médico, carga de tres cotizaciones, identificación de la alternativa autorizada y cierre del caso.
+- **Clientes:** registro de obra social o prepaga con su primer referente; acceso individual; edición de datos personales e institucionales desde **Mi cuenta**; creación de casos de medicamentos o prótesis mediante modal con pedido médico; conversación privada por caso dentro de un modal con mensajes sin leer; publicación conjunta de tres cotizaciones; descarga y selección de la cotización elegida; carga de autorización firmada; cierre por administración.
+- **Administración:** alta y bloqueo de instituciones y usuarios, cambio de credenciales, asignación de cursos, gestión de módulos y bibliografía, bandeja de mensajes recibidos, campana con contador de mensajes y casos pendientes en el menú, conversación por caso dentro de un modal, seguimiento de casos, descarga del pedido médico, carga de tres cotizaciones, identificación de la alternativa autorizada y cierre del caso.
 
-Las listas de casos de cliente y administración se sincronizan cada 15 segundos. Abrir la pestaña de conversación marca como leídos solamente los mensajes del otro lado; cada respuesta conserva autor, fecha, caso e institución.
+Las listas de casos de cliente y administración se sincronizan cada 15 segundos. Abrir el modal de conversación marca como leídos solamente los mensajes del otro lado; cada respuesta conserva autor, fecha, caso e institución.
 
 ## Configuración
 

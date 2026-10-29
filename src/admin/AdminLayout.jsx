@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom'
 import { clearToken } from '../lib/api'
+import { adminPortalRequest } from '../lib/portalApi'
 import { ToastProvider } from './ToastContext'
 import './admin.css'
 
@@ -18,6 +19,31 @@ const navItems = [
 export default function AdminLayout() {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [clientNotifications, setClientNotifications] = useState(0)
+
+  useEffect(() => {
+    let active = true
+    async function loadNotifications() {
+      try {
+        const summary = await adminPortalRequest('/summary')
+        if (active) {
+          setClientNotifications(
+            Number(summary.unreadMessages || 0) + Number(summary.pending || 0),
+          )
+        }
+      } catch {
+        // El panel sigue operativo y vuelve a intentar en la próxima consulta.
+      }
+    }
+    loadNotifications()
+    const interval = window.setInterval(loadNotifications, 15000)
+    window.addEventListener('kadima:portal-notifications', loadNotifications)
+    return () => {
+      active = false
+      window.clearInterval(interval)
+      window.removeEventListener('kadima:portal-notifications', loadNotifications)
+    }
+  }, [])
 
   function logout() {
     clearToken()
@@ -42,7 +68,18 @@ export default function AdminLayout() {
                 className={({ isActive }) => isActive ? 'active' : ''}
                 onClick={() => setSidebarOpen(false)}
               >
-                <i className={`fas ${item.icon}`} /> {item.label}
+                <i className={`fas ${item.icon}`} />
+                <span>{item.label}</span>
+                {item.to === '/admin/historias-clinicas' && clientNotifications > 0 && (
+                  <span
+                    className="admin-nav__notification"
+                    title={`${clientNotifications} notificaciones pendientes`}
+                    aria-label={`${clientNotifications} notificaciones pendientes`}
+                  >
+                    <i className="fas fa-bell" />
+                    {clientNotifications > 99 ? '99+' : clientNotifications}
+                  </span>
+                )}
               </NavLink>
             ))}
             <span className="admin-nav__group-label" style={{ marginTop: '0.5rem' }}>Sitio</span>

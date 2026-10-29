@@ -45,6 +45,10 @@
   min-height: 540px;
 }
 
+.portal-workspace--standalone {
+  padding-top: 26px;
+}
+
 .portal-workspace::before,
 .portal-workspace::after {
   content: "";
@@ -672,6 +676,38 @@
   color: #687c84;
   font-size: 13px;
 }
+.portal-conversation-trigger {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 9px 13px;
+  border: 1px solid #bcdedb;
+  border-radius: 11px;
+  background: #eff9f7;
+  color: #087b81;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.portal-conversation-trigger:hover {
+  background: #087b81;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.portal-conversation-trigger > span {
+  display: grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 999px;
+  background: #ef9f22;
+  color: #fff;
+  font-size: 10px;
+}
 .portal-case-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -870,6 +906,33 @@
   color: #71858c;
   font-size: 11px;
   font-weight: 700;
+}
+.portal-conversation-heading > div {
+  display: grid;
+  gap: 4px;
+}
+.portal-conversation-heading > div > strong {
+  color: #17394b;
+  font-size: 16px;
+}
+.portal-conversation-heading > div > span {
+  color: #71858c;
+  font-size: 12px;
+}
+.portal-conversation-modal .portal-thread {
+  min-height: 220px;
+  max-height: min(52vh, 480px);
+  padding: 14px;
+  border: 1px solid #e0eaeb;
+  border-radius: 16px;
+  background: #f6f9f9;
+}
+.portal-conversation-modal .portal-comment-form {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+}
+.portal-conversation-modal .portal-comment-form textarea {
+  min-height: 90px;
 }
 .portal-message {
   border: 1px solid #e2eaeb;
@@ -1505,6 +1568,11 @@
   .portal-case-detail-head .portal-status {
     margin-top: 10px;
   }
+  .portal-conversation-trigger {
+    width: 100%;
+    justify-content: center;
+    margin: 14px 0 0;
+  }
   .portal-form-grid,
   .admin-module-grid {
     grid-template-columns: 1fr;
@@ -1560,6 +1628,12 @@
   }
   .portal-conversation-heading > span {
     margin-top: 8px;
+  }
+  .portal-conversation-modal .portal-comment-form {
+    grid-template-columns: 1fr;
+  }
+  .portal-conversation-modal .portal-comment-form .btn {
+    width: 100%;
   }
   .portal-message {
     max-width: 100%;

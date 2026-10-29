@@ -111,7 +111,7 @@ function CaseWorkspace({ demo, user }) {
   const [selectedId, setSelectedId] = useState(demo ? demoCases[0].id : null);
   const [detail, setDetail] = useState(demo ? demoCases[0] : null);
   const [creating, setCreating] = useState(false);
-  const [activePanel, setActivePanel] = useState("summary");
+  const [conversationOpen, setConversationOpen] = useState(false);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -172,7 +172,7 @@ function CaseWorkspace({ demo, user }) {
   async function openMessages(caseId = selectedId) {
     if (!caseId) return;
     setSelectedId(caseId);
-    setActivePanel("messages");
+    setConversationOpen(true);
     if (demo) {
       setCases((current) =>
         current.map((item) =>
@@ -502,7 +502,7 @@ function CaseWorkspace({ demo, user }) {
               className={`portal-case-item ${selectedId === item.id ? "is-active" : ""}`}
               onClick={() => {
                 setSelectedId(item.id);
-                setActivePanel("summary");
+                setConversationOpen(false);
               }}
             >
               <span className="portal-case-item-top">
@@ -546,37 +546,22 @@ function CaseWorkspace({ demo, user }) {
                     {formatDate(detail.updatedAt)}
                   </p>
                 </div>
+                <button
+                  type="button"
+                  className="portal-conversation-trigger"
+                  onClick={() => openMessages()}
+                >
+                  <i className="fas fa-comments" /> Mensajes
+                  {detail.unreadMessages > 0 && (
+                    <span>{detail.unreadMessages}</span>
+                  )}
+                </button>
                 <em
                   className={`portal-status portal-status--${detail.status.toLowerCase()}`}
                 >
                   {statusLabels[detail.status]}
                 </em>
               </div>
-              <div className="portal-case-tabs" role="tablist" aria-label="Contenido del caso">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activePanel === "summary"}
-                  className={activePanel === "summary" ? "is-active" : ""}
-                  onClick={() => setActivePanel("summary")}
-                >
-                  <i className="fas fa-folder-open" /> Resumen y documentos
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activePanel === "messages"}
-                  className={activePanel === "messages" ? "is-active" : ""}
-                  onClick={() => openMessages()}
-                >
-                  <i className="fas fa-comments" /> Conversación con Kadima
-                  {detail.unreadMessages > 0 && (
-                    <span>{detail.unreadMessages}</span>
-                  )}
-                </button>
-              </div>
-              {activePanel === "summary" && (
-                <>
               <div className="portal-process">
                 <span className="is-done">Pedido médico</span>
                 <span
@@ -669,57 +654,65 @@ function CaseWorkspace({ demo, user }) {
                   </div>
                 </div>
               )}
-                </>
-              )}
-              {activePanel === "messages" && (
-              <div className="portal-detail-block">
-                <div className="portal-conversation-heading">
-                  <div>
-                    <span className="portal-kicker">Canal privado del caso</span>
-                    <h4>Conversación con Kadima</h4>
-                  </div>
-                  <span><i className="fas fa-lock" /> Solo tu institución y Kadima</span>
-                </div>
-                <div className="portal-thread">
-                  {detail.comments.length === 0 && (
-                    <p className="portal-empty">Todavía no hay mensajes.</p>
-                  )}
-                  {detail.comments.map((comment) => (
-                    <div
-                      className={`portal-message ${comment.authorRole === "KADIMA" ? "portal-message--kadima" : ""}`}
-                      key={comment.id}
-                    >
-                      <div>
-                        <strong>{comment.authorName}</strong>
-                        <time>{formatDate(comment.createdAt)}</time>
-                      </div>
-                      <p>{comment.body}</p>
-                    </div>
-                  ))}
-                </div>
-                <form className="portal-comment-form" onSubmit={submitComment}>
-                  <label className="sr-only" htmlFor="portal-comment">
-                    Escribir mensaje
-                  </label>
-                  <textarea
-                    id="portal-comment"
-                    name="body"
-                    placeholder="Escribí un mensaje para este caso…"
-                    required
-                    minLength="2"
-                    maxLength="2000"
-                    rows="3"
-                  />
-                  <button className="btn btn--primary" disabled={working}>
-                    <i className="fas fa-paper-plane" /> Enviar a Kadima
-                  </button>
-                </form>
-              </div>
-              )}
             </>
           )}
         </section>
       </div>
+      <PortalModal
+        open={conversationOpen && Boolean(detail)}
+        onClose={() => setConversationOpen(false)}
+        eyebrow={`Caso #${detail?.id || ""}`}
+        title="Conversación con Kadima"
+        wide
+      >
+        {detail && (
+          <div className="portal-conversation-modal">
+            <div className="portal-conversation-heading">
+              <div>
+                <strong>{detail.subject}</strong>
+                <span>{detail.patientLabel}</span>
+              </div>
+              <span>
+                <i className="fas fa-lock" /> Solo tu institución y Kadima
+              </span>
+            </div>
+            <div className="portal-thread">
+              {detail.comments.length === 0 && (
+                <p className="portal-empty">Todavía no hay mensajes.</p>
+              )}
+              {detail.comments.map((comment) => (
+                <div
+                  className={`portal-message ${comment.authorRole === "KADIMA" ? "portal-message--kadima" : ""}`}
+                  key={comment.id}
+                >
+                  <div>
+                    <strong>{comment.authorName}</strong>
+                    <time>{formatDate(comment.createdAt)}</time>
+                  </div>
+                  <p>{comment.body}</p>
+                </div>
+              ))}
+            </div>
+            <form className="portal-comment-form" onSubmit={submitComment}>
+              <label className="sr-only" htmlFor="portal-comment">
+                Escribir mensaje
+              </label>
+              <textarea
+                id="portal-comment"
+                name="body"
+                placeholder="Escribí un mensaje para este caso…"
+                required
+                minLength="2"
+                maxLength="2000"
+                rows="3"
+              />
+              <button className="btn btn--primary" disabled={working}>
+                <i className="fas fa-paper-plane" /> Enviar a Kadima
+              </button>
+            </form>
+          </div>
+        )}
+      </PortalModal>
     </>
   );
 }

@@ -68,6 +68,28 @@
 .admin-nav a:hover { background: rgba(255,255,255,0.07); color: var(--color-white); }
 .admin-nav a.active { background: rgba(46,201,197,0.15); color: var(--color-accent); }
 .admin-nav a i { width: 1.25rem; text-align: center; font-size: 0.9375rem; }
+.admin-nav a > span:not(.admin-nav__notification) { min-width: 0; }
+.admin-nav__notification {
+  display: inline-flex;
+  min-width: 2rem;
+  height: 1.55rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: #e14d5a;
+  color: #fff;
+  font-size: 0.68rem;
+  line-height: 1;
+  box-shadow: 0 0 0 3px rgba(225, 77, 90, 0.14);
+}
+.admin-nav a .admin-nav__notification i {
+  width: auto;
+  color: inherit;
+  font-size: 0.65rem;
+}
 
 .admin-sidebar__footer {
   padding: 1rem 1.5rem;

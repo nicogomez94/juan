@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export default function PortalModal({ open, onClose, eyebrow, title, children, wide = false }) {
   const titleId = useId();
@@ -20,7 +21,7 @@ export default function PortalModal({ open, onClose, eyebrow, title, children, w
   }, [open, onClose]);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="portal-modal-backdrop" onMouseDown={(event) => {
       if (event.target === event.currentTarget) onClose();
     }}>
@@ -47,6 +48,7 @@ export default function PortalModal({ open, onClose, eyebrow, title, children, w
         </header>
         <div className="portal-modal__body">{children}</div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }
