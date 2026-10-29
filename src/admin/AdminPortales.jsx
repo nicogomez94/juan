@@ -127,6 +127,10 @@ function AdminPortalStudents({ error, setError, setNotice }) {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [modules, setModules] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [createUserOpen, setCreateUserOpen] = useState(false);
+  const [assignCourseOpen, setAssignCourseOpen] = useState(false);
+  const [createModuleOpen, setCreateModuleOpen] = useState(false);
+  const [resourceModule, setResourceModule] = useState(null);
   async function load() {
     const [accounts, catalog] = await Promise.all([
       request("/users?role=STUDENT"),
@@ -154,8 +158,10 @@ function AdminPortalStudents({ error, setError, setNotice }) {
       if (selectedCourse)
         setModules(await request(`/courses/${selectedCourse}/modules`));
       setNotice(success);
+      return true;
     } catch (err) {
       setError(err.message);
+      return false;
     } finally {
       setBusy(false);
     }
@@ -164,17 +170,37 @@ function AdminPortalStudents({ error, setError, setNotice }) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form));
-    await act(
+    const completed = await act(
       () => request("/users", "POST", { ...data, role: "STUDENT" }),
       "Estudiante creado.",
     );
-    form.reset();
+    if (completed) {
+      form.reset();
+      setCreateUserOpen(false);
+    }
+  }
+  async function assignCourse(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = Object.fromEntries(new FormData(form));
+    const completed = await act(
+      () =>
+        request("/enrollments", "POST", {
+          userId: Number(data.userId),
+          courseId: Number(data.courseId),
+        }),
+      "Curso asignado.",
+    );
+    if (completed) {
+      form.reset();
+      setAssignCourseOpen(false);
+    }
   }
   async function addModule(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form));
-    await act(
+    const completed = await act(
       () =>
         request(`/courses/${selectedCourse}/modules`, "POST", {
           ...data,
@@ -183,17 +209,23 @@ function AdminPortalStudents({ error, setError, setNotice }) {
         }),
       "Módulo publicado.",
     );
-    form.reset();
+    if (completed) {
+      form.reset();
+      setCreateModuleOpen(false);
+    }
   }
   async function addResource(event, moduleId) {
     event.preventDefault();
     const form = event.currentTarget;
-    await act(
+    const completed = await act(
       () =>
         request(`/modules/${moduleId}/resources`, "POST", new FormData(form)),
       "Bibliografía cargada.",
     );
-    form.reset();
+    if (completed) {
+      form.reset();
+      setResourceModule(null);
+    }
   }
   return (
     <>
@@ -205,82 +237,44 @@ function AdminPortalStudents({ error, setError, setNotice }) {
             bibliografía.
           </p>
         </div>
-        <Link
-          className="btn btn--primary"
-          to="/portal-estudiantes"
-          target="_blank"
-        >
-          Ver portal
-        </Link>
-      </div>
-      <div className="admin-portal-grid">
-        <section className="admin-portal-card">
-          <h3>Crear estudiante</h3>
-          <form onSubmit={addUser} className="admin-portal-form">
-            <input
-              name="name"
-              placeholder="Nombre y apellido"
-              required
-              minLength="3"
-            />
-            <input name="email" type="email" placeholder="Email" required />
-            <input
-              name="password"
-              type="password"
-              placeholder="Contraseña inicial · mínimo 10 caracteres"
-              required
-              minLength="10"
-            />
-            <button className="btn btn--primary" disabled={busy}>
-              Crear acceso
-            </button>
-          </form>
-        </section>
-        <section className="admin-portal-card">
-          <h3>Asignar curso</h3>
-          <form
-            className="admin-portal-form"
-            onSubmit={(event) => {
-              event.preventDefault();
-              const form = event.currentTarget;
-              const data = Object.fromEntries(new FormData(form));
-              act(
-                () =>
-                  request("/enrollments", "POST", {
-                    userId: Number(data.userId),
-                    courseId: Number(data.courseId),
-                  }),
-                "Curso asignado.",
-              );
-            }}
+        <div className="admin-section-actions">
+          <button
+            type="button"
+            className="btn btn--outline"
+            onClick={() => setCreateUserOpen(true)}
           >
-            <select name="userId" required>
-              <option value="">Elegí estudiante</option>
-              {users
-                .filter((user) => user.active)
-                .map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-            </select>
-            <select name="courseId" required>
-              <option value="">Elegí curso</option>
-              {courses.map((course) => (
-                <option key={course.id} value={course.id}>
-                  {course.titulo}
-                </option>
-              ))}
-            </select>
-            <button className="btn btn--primary" disabled={busy}>
-              Asignar curso
-            </button>
-          </form>
-          <p>
-            El catálogo principal se edita en{" "}
-            <Link to="/admin/capacitaciones">Cursos y capacitaciones</Link>.
-          </p>
-        </section>
+            <i className="fas fa-user-plus" /> Nuevo estudiante
+          </button>
+          <button
+            type="button"
+            className="btn btn--primary"
+            onClick={() => setAssignCourseOpen(true)}
+          >
+            <i className="fas fa-book-open-reader" /> Asignar curso
+          </button>
+          <Link to="/portal-estudiantes" target="_blank">
+            Ver portal <i className="fas fa-arrow-up-right-from-square" />
+          </Link>
+        </div>
+      </div>
+      <div className="admin-student-overview">
+        <div>
+          <i className="fas fa-user-graduate" />
+          <strong>{users.filter((user) => user.active).length}</strong>
+          <span>Estudiantes activos</span>
+        </div>
+        <div>
+          <i className="fas fa-book" />
+          <strong>
+            {users.reduce((total, user) => total + user.enrollments.length, 0)}
+          </strong>
+          <span>Inscripciones</span>
+        </div>
+        <div>
+          <i className="fas fa-layer-group" />
+          <strong>{modules.length}</strong>
+          <span>Módulos del curso seleccionado</span>
+        </div>
       </div>
       <section className="admin-portal-card">
         <h3>Estudiantes y progreso</h3>
@@ -389,50 +383,28 @@ function AdminPortalStudents({ error, setError, setNotice }) {
             <span className="portal-kicker">Contenidos</span>
             <h3>Módulos y encuentros</h3>
           </div>
-          <select
-            aria-label="Curso"
-            value={selectedCourse}
-            onChange={(event) => setSelectedCourse(event.target.value)}
-          >
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.titulo}
-              </option>
-            ))}
-          </select>
-        </div>
-        {selectedCourse && (
-          <form
-            className="admin-portal-form admin-portal-form--inline"
-            onSubmit={addModule}
-          >
-            <input
-              name="title"
-              placeholder="Título del módulo"
-              required
-              minLength="3"
-            />
-            <input name="description" placeholder="Descripción" />
-            <label>
-              Fecha de clase
-              <input name="startsAt" type="datetime-local" />
-            </label>
-            <input
-              name="meetingUrl"
-              type="url"
-              placeholder="Enlace HTTPS de Zoom o Meet"
-            />
-            <input
-              name="order"
-              type="number"
-              placeholder="Orden"
-              defaultValue="0"
-            />
-            <button className="btn btn--primary" disabled={busy}>
-              Agregar módulo
+          <div className="admin-section-actions">
+            <select
+              aria-label="Curso"
+              value={selectedCourse}
+              onChange={(event) => setSelectedCourse(event.target.value)}
+            >
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.titulo}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="btn btn--primary"
+              disabled={!selectedCourse}
+              onClick={() => setCreateModuleOpen(true)}
+            >
+              <i className="fas fa-plus" /> Nuevo módulo
             </button>
-          </form>
-        )}
+          </div>
+        </div>
         {modules.length === 0 && <p>No hay módulos para este curso.</p>}
         <div className="admin-module-grid">
           {modules.map((module) => (
@@ -508,30 +480,141 @@ function AdminPortalStudents({ error, setError, setNotice }) {
                   </div>
                 ))}
               </div>
-              <form
-                className="admin-portal-form"
-                onSubmit={(event) => addResource(event, module.id)}
+              <button
+                type="button"
+                className="portal-text-button admin-resource-add"
+                onClick={() => setResourceModule(module)}
               >
-                <input
-                  name="title"
-                  placeholder="Título de bibliografía"
-                  required
-                  minLength="3"
-                />
-                <input
-                  name="file"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  required
-                />
-                <button className="portal-text-button" disabled={busy}>
-                  Subir material
-                </button>
-              </form>
+                <i className="fas fa-cloud-arrow-up" /> Cargar bibliografía
+              </button>
             </article>
           ))}
         </div>
       </section>
+      <PortalModal
+        open={createUserOpen}
+        onClose={() => setCreateUserOpen(false)}
+        eyebrow="Portal de estudiantes"
+        title="Nuevo estudiante"
+      >
+        <form onSubmit={addUser} className="portal-modal-form">
+          <label>
+            Nombre y apellido
+            <input name="name" required minLength="3" />
+          </label>
+          <label>
+            Correo electrónico
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Contraseña inicial
+            <input name="password" type="password" required minLength="10" />
+          </label>
+          <button className="btn btn--primary" disabled={busy}>
+            Crear acceso
+          </button>
+        </form>
+      </PortalModal>
+      <PortalModal
+        open={assignCourseOpen}
+        onClose={() => setAssignCourseOpen(false)}
+        eyebrow="Inscripción"
+        title="Asignar curso"
+      >
+        <form onSubmit={assignCourse} className="portal-modal-form">
+          <label>
+            Estudiante
+            <select name="userId" required defaultValue="">
+              <option value="" disabled>
+                Elegí estudiante
+              </option>
+              {users
+                .filter((user) => user.active)
+                .map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <label>
+            Curso
+            <select name="courseId" required defaultValue="">
+              <option value="" disabled>
+                Elegí curso
+              </option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.titulo}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className="btn btn--primary" disabled={busy}>
+            Confirmar inscripción
+          </button>
+        </form>
+      </PortalModal>
+      <PortalModal
+        open={createModuleOpen}
+        onClose={() => setCreateModuleOpen(false)}
+        eyebrow="Programa académico"
+        title="Nuevo módulo"
+      >
+        <form onSubmit={addModule} className="portal-modal-form">
+          <label>
+            Título del módulo
+            <input name="title" required minLength="3" />
+          </label>
+          <label>
+            Descripción
+            <textarea name="description" rows="3" />
+          </label>
+          <label>
+            Fecha y hora de clase
+            <input name="startsAt" type="datetime-local" />
+          </label>
+          <label>
+            Enlace HTTPS de Zoom o Meet
+            <input name="meetingUrl" type="url" />
+          </label>
+          <label>
+            Orden
+            <input name="order" type="number" defaultValue="0" />
+          </label>
+          <button className="btn btn--primary" disabled={busy}>
+            Publicar módulo
+          </button>
+        </form>
+      </PortalModal>
+      <PortalModal
+        open={Boolean(resourceModule)}
+        onClose={() => setResourceModule(null)}
+        eyebrow="Biblioteca"
+        title={`Cargar material · ${resourceModule?.title || "Módulo"}`}
+      >
+        <form
+          className="portal-modal-form"
+          onSubmit={(event) => addResource(event, resourceModule.id)}
+        >
+          <label>
+            Título de la bibliografía
+            <input name="title" required minLength="3" />
+          </label>
+          <label>
+            Archivo PDF, JPG o PNG
+            <input
+              name="file"
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              required
+            />
+          </label>
+          <button className="btn btn--primary" disabled={busy}>
+            Subir material
+          </button>
+        </form>
+      </PortalModal>
     </>
   );
 }
