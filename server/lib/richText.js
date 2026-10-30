@@ -17,7 +17,13 @@ const allowedTags = [
 ]
 
 function sanitizeRichText(value) {
-  return sanitizeHtml(String(value || ''), {
+  const normalized = String(value || '')
+    .replace(/<div\b[^>]*>/gi, '<p>')
+    .replace(/<\/div>/gi, '</p>')
+    .replace(/<span\b[^>]*>/gi, '')
+    .replace(/<\/span>/gi, '')
+
+  return sanitizeHtml(normalized, {
     allowedTags,
     allowedAttributes: {},
     disallowedTagsMode: 'discard',
