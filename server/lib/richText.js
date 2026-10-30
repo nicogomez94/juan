@@ -31,7 +31,11 @@ function sanitizeRichText(value) {
 }
 
 function plainText(value, maxLength = 240) {
-  const text = sanitizeHtml(String(value || ''), {
+  const spaced = String(value || '').replace(
+    /<\/?(?:p|div|h[1-6]|li|ul|ol|blockquote|br)\b[^>]*>/gi,
+    ' ',
+  )
+  const text = sanitizeHtml(spaced, {
     allowedTags: [],
     allowedAttributes: {},
   })
