@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { PrismaClient } = require('@prisma/client')
 const { authMiddleware } = require('../middleware/auth')
+const { plainText, sanitizeRichText } = require('../lib/richText')
 const prisma = new PrismaClient()
 
 function slugify(text) {
@@ -76,8 +77,8 @@ router.post('/', authMiddleware, async (req, res) => {
       data: {
         titulo,
         slug,
-        contenido,
-        resumen,
+        contenido: sanitizeRichText(contenido),
+        resumen: plainText(resumen, 300),
         imagen: imagen || null,
         categoria: categoria || 'General',
         publicado: publicado ?? false,
@@ -104,8 +105,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
       where: { id: Number(req.params.id) },
       data: {
         titulo,
-        contenido,
-        resumen,
+        contenido: sanitizeRichText(contenido),
+        resumen: plainText(resumen, 300),
         imagen: imagen || null,
         categoria: categoria || 'General',
         publicado: publicado ?? existing.publicado,

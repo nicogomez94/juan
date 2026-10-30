@@ -3,8 +3,9 @@ import { api, uploadImages } from '../lib/api'
 import ImageUploader from './ImageUploader'
 import { useToast } from './ToastContext'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
+import { pasteAsPlainText } from '../lib/richText'
 
-const EMPTY = { nombre: '', descripcion: '', imagen: '', orden: 0, activo: true }
+const EMPTY = { nombre: '', descripcion: '', contenido: '', imagen: '', orden: 0, activo: true }
 
 export default function AdminEquipos() {
   const toast = useToast()
@@ -62,7 +63,7 @@ export default function AdminEquipos() {
       }
       const body = {
         ...form,
-        descripcion: editorRef.current ? editorRef.current.innerHTML : form.descripcion,
+        contenido: editorRef.current ? editorRef.current.innerHTML : form.contenido,
         imagen,
         orden: Number(form.orden),
       }
@@ -146,10 +147,7 @@ export default function AdminEquipos() {
                     : <span className="admin-table__empty-image">Sin imagen</span>}
                 </td>
                 <td><strong style={{ color: 'var(--color-primary)' }}>{item.nombre}</strong></td>
-                <td
-                  className="admin-table__rich-preview"
-                  dangerouslySetInnerHTML={{ __html: item.descripcion }}
-                />
+                <td className="admin-table__rich-preview">{item.descripcion}</td>
                 <td>{item.orden}</td>
                 <td>
                   <span className={`admin-table__badge ${item.activo ? 'admin-table__badge--green' : 'admin-table__badge--gray'}`}>
@@ -186,7 +184,21 @@ export default function AdminEquipos() {
               <div className="admin-modal__body">
                 <div className="admin-form__group"><label>Nombre *</label><input name="nombre" value={form.nombre} onChange={handle} required /></div>
                 <div className="admin-form__group">
-                  <label>Descripción</label>
+                  <label>Descripción breve *</label>
+                  <textarea
+                    name="descripcion"
+                    value={form.descripcion}
+                    onChange={handle}
+                    rows={3}
+                    maxLength={240}
+                    placeholder="Resumen corto que se muestra en la tarjeta del listado."
+                    required
+                  />
+                  <span className="admin-form__hint">{form.descripcion.length}/240 · Se usa únicamente como presentación resumida.</span>
+                </div>
+                <div className="admin-form__group">
+                  <label>Contenido de la página *</label>
+                  <span className="admin-form__hint">Este contenido se publica en la página propia del equipo. Al pegar texto se descartan las tipografías externas.</span>
                   <div className="admin-editor">
                     <div className="admin-editor__toolbar">
                       <button type="button" className="admin-editor__btn" title="Negrita" onClick={() => execCmd('bold')}><i className="fas fa-bold" /></button>
@@ -208,8 +220,9 @@ export default function AdminEquipos() {
                       ref={editorRef}
                       className="admin-editor__content admin-editor__content--compact"
                       contentEditable
+                      onPaste={pasteAsPlainText}
                       suppressContentEditableWarning
-                      dangerouslySetInnerHTML={{ __html: form.descripcion }}
+                      dangerouslySetInnerHTML={{ __html: form.contenido }}
                     />
                   </div>
                 </div>

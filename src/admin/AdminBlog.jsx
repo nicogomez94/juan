@@ -3,6 +3,7 @@ import { api, uploadImages } from '../lib/api'
 import { DEBUG, debugDefaults } from '../lib/debugDefaults'
 import ImageUploader from './ImageUploader'
 import { useToast } from './ToastContext'
+import { pasteAsPlainText } from '../lib/richText'
 
 const EMPTY_POST = { titulo: '', resumen: '', imagen: '', categoria: 'General', contenido: '', publicado: false }
 
@@ -182,6 +183,7 @@ export default function AdminBlog() {
                     ref={editorRef}
                     className="admin-editor__content"
                     contentEditable
+                    onPaste={pasteAsPlainText}
                     suppressContentEditableWarning
                     dangerouslySetInnerHTML={{ __html: form.contenido }}
                   />
@@ -339,6 +341,7 @@ export default function AdminBlog() {
                       ref={modalEditorRef}
                       className="admin-editor__content"
                       contentEditable
+                      onPaste={pasteAsPlainText}
                       suppressContentEditableWarning
                       dangerouslySetInnerHTML={{ __html: form.contenido }}
                     />

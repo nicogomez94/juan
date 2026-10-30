@@ -16,7 +16,7 @@ export const debugDefaults = {
   },
   portalLogin: {
     studentEmail: 'estudiante-demo@kadima.invalid',
-    clientEmail: 'cliente-demo@kadima.invalid',
+    clientEmail: 'cliente.prueba@kadimasalud.com.ar',
     password: import.meta.env.DEV ? import.meta.env.VITE_DEBUG_PORTAL_PASSWORD || '' : '',
   },
   capacitacion: {
@@ -32,7 +32,8 @@ export const debugDefaults = {
   },
   equipo: {
     nombre: 'Nueva Especialidad',
-    descripcion: '<p>Descripción del equipo médico y sus capacidades para instituciones del sector salud.</p>',
+    descripcion: 'Atención especializada y cobertura institucional coordinada por Kadima Salud.',
+    contenido: '<h2>Un equipo preparado para cada institución</h2><p>Profesionales seleccionados según la complejidad y las necesidades de cada institución.</p><h2>Alcance del servicio</h2><ul><li>Coordinación institucional</li><li>Disponibilidad flexible</li><li>Seguimiento administrativo</li></ul>',
     imagen: '',
   },
   blogPost: {

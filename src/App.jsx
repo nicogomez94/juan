@@ -7,6 +7,7 @@ import PortalEstudiantes from './pages/PortalEstudiantes'
 import PortalHistoriasClinicas from './pages/PortalHistoriasClinicas'
 import Surge from './pages/Surge'
 import Equipos from './pages/Equipos'
+import EquipoDetalle from './pages/EquipoDetalle'
 import Contacto from './pages/Contacto'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/portal-historias-clinicas" element={<Navigate to="/portal-clientes" replace />} />
         <Route path="/surge" element={<Surge />} />
         <Route path="/equipos" element={<Equipos />} />
+        <Route path="/equipos/:id" element={<EquipoDetalle />} />
         <Route path="/servicios/auditoria-de-liquidacion" element={<AuditoriaLiquidacion />} />
         <Route path="/servicios/internacion-domiciliaria" element={<InternacionDomiciliaria />} />
         <Route path="/servicios/control-de-pacientes-diabeticos" element={<ControlDiabetes />} />

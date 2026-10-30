@@ -88,8 +88,10 @@ export default function Equipos() {
                   )}
                   <div className="equipo__card-body">
                     <h3>{e.nombre}</h3>
-                    <div className="equipo__card-description" dangerouslySetInnerHTML={{ __html: e.descripcion }} />
-                    <Link to="/contacto" className="equipo__link">Consultar disponibilidad <i className="fas fa-arrow-right" /></Link>
+                    <p className="equipo__card-description">{e.descripcion}</p>
+                    <Link to={`/equipos/${e.id}`} className="equipo__link" aria-label={`Ver información de ${e.nombre}`}>
+                      Ver especialidad <i className="fas fa-arrow-right" />
+                    </Link>
                   </div>
                 </div>
               ))}
