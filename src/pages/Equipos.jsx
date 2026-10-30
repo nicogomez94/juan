@@ -192,15 +192,15 @@ export default function Equipos() {
                     className="equipo-modal__rich"
                     dangerouslySetInnerHTML={{ __html: expanded.contenido || `<p>${expanded.descripcion}</p>` }}
                   />
-                  <footer className="equipo-modal__footer">
-                    <Link to="/contacto" className="btn btn--primary" onClick={closeExpanded}>
-                      Consultar con Kadima
-                    </Link>
-                    <Link to={`/equipos/${expanded.id}`} className="equipo-modal__page-link">
-                      Abrir página completa <i className="fas fa-arrow-up-right-from-square" />
-                    </Link>
-                  </footer>
                 </div>
+                <footer className="equipo-modal__footer">
+                  <Link to="/contacto" className="btn btn--primary" onClick={closeExpanded}>
+                    Consultar con Kadima
+                  </Link>
+                  <Link to={`/equipos/${expanded.id}`} className="equipo-modal__page-link">
+                    Abrir página completa <i className="fas fa-arrow-up-right-from-square" />
+                  </Link>
+                </footer>
               </>
             )}
           </div>

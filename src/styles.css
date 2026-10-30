@@ -1038,6 +1038,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .equipo-modal__dialog {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: min(980px, 100%);
   max-height: min(90vh, 860px);
   overflow: hidden;
@@ -1065,6 +1067,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .equipo-modal__close:hover { transform: rotate(8deg); background: var(--color-gray-light); }
 .equipo-modal__header {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
   min-height: 250px;
@@ -1102,7 +1105,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .equipo-modal__header--no-image { grid-template-columns: minmax(0, 1fr); }
 .equipo-modal__header--no-image > div { max-width: 780px; }
 .equipo-modal__scroll {
-  max-height: calc(min(90vh, 860px) - 250px);
+  min-height: 0;
+  flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 2.25rem 2.5rem 2rem;
@@ -1139,12 +1143,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   background: var(--color-gray-light);
 }
 .equipo-modal__footer {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  padding: 1rem 2.5rem;
   border-top: 1px solid var(--color-border);
+  background: var(--color-white);
 }
 .equipo-modal__page-link {
   display: inline-flex;
@@ -1193,8 +1198,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .equipo-modal__header > div { padding: 2.25rem 1.35rem 1.4rem; }
   .equipo-modal__header h2 { padding-right: 2rem; font-size: 1.55rem; }
   .equipo-modal__header img { height: 190px; min-height: 0; }
-  .equipo-modal__scroll { max-height: calc(94vh - 300px); padding: 1.5rem 1.35rem 2rem; }
-  .equipo-modal__footer { align-items: stretch; flex-direction: column; }
+  .equipo-modal__scroll { padding: 1.5rem 1.35rem 2rem; }
+  .equipo-modal__footer { align-items: stretch; flex-direction: column; gap: 0.5rem; padding: 0.85rem 1.35rem; }
   .equipo-modal__footer .btn { justify-content: center; }
   .equipo-modal__page-link { justify-content: center; padding: 0.5rem; }
 }

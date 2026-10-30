@@ -54,8 +54,8 @@ router.post('/', authMiddleware, async (req, res) => {
     const { nombre, descripcion, contenido, imagen, orden, activo } = req.body
     const summary = plainText(descripcion)
     const body = sanitizeRichText(contenido)
-    if (!nombre?.trim() || !summary || !body) {
-      return res.status(400).json({ error: 'Completá nombre, descripción breve y contenido.' })
+    if (!nombre?.trim() || nombre.trim().length > 90 || !summary || !body) {
+      return res.status(400).json({ error: 'Completá un nombre de hasta 90 caracteres, la descripción breve y el contenido.' })
     }
     const item = await prisma.equipo.create({
       data: {
@@ -79,8 +79,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const { nombre, descripcion, contenido, imagen, orden, activo } = req.body
     const summary = plainText(descripcion)
     const body = sanitizeRichText(contenido)
-    if (!nombre?.trim() || !summary || !body) {
-      return res.status(400).json({ error: 'Completá nombre, descripción breve y contenido.' })
+    if (!nombre?.trim() || nombre.trim().length > 90 || !summary || !body) {
+      return res.status(400).json({ error: 'Completá un nombre de hasta 90 caracteres, la descripción breve y el contenido.' })
     }
     const item = await prisma.equipo.update({
       where: { id: Number(req.params.id) },

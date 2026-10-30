@@ -182,7 +182,11 @@ export default function AdminEquipos() {
             </div>
             <form onSubmit={save}>
               <div className="admin-modal__body">
-                <div className="admin-form__group"><label>Nombre *</label><input name="nombre" value={form.nombre} onChange={handle} required /></div>
+                <div className="admin-form__group">
+                  <label>Nombre *</label>
+                  <input name="nombre" value={form.nombre} onChange={handle} maxLength={90} required />
+                  <span className="admin-form__hint">{form.nombre.length}/90 · Usá la descripción para aclaraciones o destinatarios.</span>
+                </div>
                 <div className="admin-form__group">
                   <label>Descripción breve *</label>
                   <textarea
