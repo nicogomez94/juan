@@ -12,6 +12,8 @@ import {
   normalizeFullName,
   sendContactForm,
 } from '../lib/contactForm'
+import horizontalBanner from '../../horizontal.svg'
+import verticalBanner from '../../vertical.svg'
 
 function useFadeIn(dependencies = []) {
   const ref = useRef(null)
@@ -108,7 +110,15 @@ export default function Home() {
 
   return (
     <div ref={ref}>
-      <Navbar />
+      <div className="home-start" id="inicio">
+        <div className="home-start__banner">
+          <picture>
+            <source media="(min-width: 721px)" srcSet={horizontalBanner} />
+            <img src={verticalBanner} alt="Kadima Consultoría en Salud" />
+          </picture>
+        </div>
+        <Navbar />
+      </div>
 
       <section className="home-hero" aria-labelledby="home-hero-title">
         <div className="home-hero__orbit home-hero__orbit--one" aria-hidden="true" />
