@@ -31,13 +31,18 @@ function sanitizeRichText(value) {
 }
 
 function plainText(value, maxLength = 240) {
-  return sanitizeHtml(String(value || ''), {
+  const text = sanitizeHtml(String(value || ''), {
     allowedTags: [],
     allowedAttributes: {},
   })
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, maxLength)
+
+  if (text.length <= maxLength) return text
+  const clipped = text.slice(0, maxLength + 1)
+  const lastSpace = clipped.lastIndexOf(' ')
+  const safeEnd = lastSpace >= Math.floor(maxLength * 0.75) ? lastSpace : maxLength
+  return `${clipped.slice(0, safeEnd).replace(/[\s,.;:!?-]+$/g, '')}…`
 }
 
 module.exports = { sanitizeRichText, plainText }
